@@ -39,8 +39,18 @@ public class Book {
 		this.status = status;
 	}
 
+	public String newChapter;
+
+	public String getNewChapter() {
+		return newChapter;
+	}
+
+	public void setNewChapter(String newChapter) {
+		this.newChapter = newChapter;
+	}
+
 	@Override
 	public String toString() {
-		return "Book [name=" + name + ", author=" + author + ", status=" + status + "]";
+		return "Book [name=" + name + ", author=" + author + ", status=" + status + ", newChapter=" + newChapter + "]";
 	}
 }

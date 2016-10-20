@@ -10,17 +10,53 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.nodes.Document;
 
+import com.novelspider.enums.Type;
+import com.novelspider.interfaces.INovelspider;
 
 /**
- * @author Administrator
- * 抽象类
+ * @author Administrator 抽象类
  */
-public abstract class Abstractspider {
+public abstract class Abstractspider implements INovelspider {
+	
+	
+	/**
+	 *  jsoup文本处理
+	 */
+	protected Document parseDoc;
+	
+	
+	public Document getParseDoc() {
+		return parseDoc;
+	}
+
+
+	public void setParseDoc(Document parseDoc) {
+		this.parseDoc = parseDoc;
+	}
+
+
+	/**
+	 *  需要处理的url地址
+	 */
+	protected String nextUrl;
+	
+	@Override
+	public String getNextUrl() {
+		return nextUrl;
+	}
+
+	@Override
+	public void setNextUrl(String nextUrl) {
+		this.nextUrl = nextUrl;
+	}
+
+
 	/*
 	 * 爬取网页信息
 	 */
-	private static String pickData(String url) {
+	public String pickData(String url, String charset) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpGet httpget = new HttpGet(url);
@@ -30,7 +66,7 @@ public abstract class Abstractspider {
 				HttpEntity entity = response.getEntity();
 				// 打印响应状态
 				if (entity != null) {
-					return EntityUtils.toString(entity);
+					return EntityUtils.toString(entity, charset);
 				}
 			} finally {
 				response.close();
@@ -51,12 +87,13 @@ public abstract class Abstractspider {
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * 解析html
+	 * 
 	 * @param html
 	 * @return 数据对象
 	 */
-	public abstract Object analyzeHTMLByString(String html);
+	public abstract Object analyzeHTMLByString(Type type,String html);
 }

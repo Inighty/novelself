@@ -6,7 +6,7 @@ import com.novelspider.enums.Type;
  * @author Administrator
  * 爬取页面接口
  */
-public interface INovelspider {
+public interface INovelSpider {
 	
 	
 	/**

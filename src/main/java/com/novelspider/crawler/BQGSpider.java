@@ -13,7 +13,7 @@ import com.novelspider.enums.Type;
 /**
  * @author Administrator 笔趣阁
  */
-public class BQGspider extends Abstractspider {
+public class BQGSpider extends AbstractSpider {
 
 	@Override
 	public Object analyzeHTMLByString(Type type, String html) {
@@ -21,14 +21,15 @@ public class BQGspider extends Abstractspider {
 		case booklist:
 			parseDoc = Jsoup.parse(html, "http://www.biquge.com/");
 			Elements listElements = parseDoc.getElementsByClass("result-list");
+			Book book = null;
 			if (null != listElements) {
-				Book book = new Book();
 				Element firstBook = listElements.get(0);
 				Element result = firstBook.getElementsByClass("result-game-item-detail").get(0);
 				if (null != result) {
+					book= new Book();
 					book.name = result.getElementsByTag("a").first().text();
 					book.url = result.select("a").attr("href").toString();
-					////这里将书的地址赋给下次需要处理的url中
+					//// 这里将书的地址赋给下次需要处理的url中
 					nextUrl = book.url;
 					result = result.getElementsByClass("result-game-item-info").get(0);
 					if (null != result) {
@@ -40,6 +41,7 @@ public class BQGspider extends Abstractspider {
 					System.out.println(book.toString());
 				}
 			}
+			return book;
 			// 先只取第一个吧
 			// List<Book> list = new ArrayList<Book>();
 			// listElements.forEach(s ->
@@ -56,7 +58,6 @@ public class BQGspider extends Abstractspider {
 			// list.add(book);
 			// });
 			// }));
-			break;
 		case chapterlist:
 			
 			break;

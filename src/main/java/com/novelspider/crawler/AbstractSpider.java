@@ -13,12 +13,12 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.nodes.Document;
 
 import com.novelspider.enums.Type;
-import com.novelspider.interfaces.INovelspider;
+import com.novelspider.interfaces.INovelSpider;
 
 /**
  * @author Administrator 抽象类
  */
-public abstract class Abstractspider implements INovelspider {
+public abstract class AbstractSpider implements INovelSpider {
 	
 	
 	/**

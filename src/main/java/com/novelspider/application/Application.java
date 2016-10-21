@@ -1,7 +1,5 @@
 package com.novelspider.application;
 
-import com.novelspider.*;
-
 /**
  * Hello world!
  *

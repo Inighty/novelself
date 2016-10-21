@@ -1,4 +1,4 @@
-package com.novelspider.crawler;
+package com.novelspider.spider;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import com.novelspider.interfaces.INovelSpider;
  */
 public abstract class AbstractSpider implements INovelSpider {
 	
-	
+
 	/**
 	 *  jsoup文本处理
 	 */

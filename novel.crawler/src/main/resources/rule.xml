@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Rule>
+	<Site>
+		<name>BQG</name>
+		<chapter-list-element selector="#list dd a" />
+		<!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
+		<content-this-element selector="#content" index="0">
+			<!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
+			<parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
+			<parse to="#{line-break}"><![CDATA[<br/>]]></parse>
+			<parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
+		</content-this-element>
+		<content-this-title-element selector="div.bookname h1"
+			index="0" />
+		<content-this-prev-element selector="#pager_prev"
+			index="0" />
+		<content-this-next-element selector="#pager_next"
+			index="0" />
+	</Site>
+</Rule>

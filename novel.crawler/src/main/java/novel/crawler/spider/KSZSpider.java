@@ -80,18 +80,4 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 		return books;
 	};
 
-	/**
-	 * 根据小说库主页获取分类url
-	 * 
-	 * @param url
-	 * @return 返回url list "http://www.kanshuzhong.com/map/A/1/"
-	 */
-	@Override
-	public List<String> getListUrl(String url) {
-		List<String> list = new ArrayList<String>();
-
-		return list;
-	}
-
-
 }

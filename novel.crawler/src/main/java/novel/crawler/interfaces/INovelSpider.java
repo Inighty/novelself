@@ -20,8 +20,9 @@ public interface INovelSpider {
 	 * 
 	 * @param url
 	 * @return 字符串
+	 * @throws Exception 
 	 */
-	public String pickData(String url, String charset);
+	public String pickData(String url, String charset) throws Exception;
 
 	/**
 	 * 解析html
@@ -94,15 +95,6 @@ public interface INovelSpider {
 	 * @return 返回小说实体列表
 	 */
 	public List<Book> getAllBooks(String url, Integer maxTryTime);
-
-	/**
-	 * 根据小说库主页获取分类url
-	 * 
-	 * @param url
-	 * @return 返回url list
-	 */
-	public List<String> getListUrl(String url);
-
 
 	/**
 	 * 判断是否还有下一页

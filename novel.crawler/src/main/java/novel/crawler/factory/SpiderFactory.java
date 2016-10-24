@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import novel.crawler.enums.Web;
 import novel.crawler.spider.AbstractSpider;
 
 /**
@@ -19,8 +20,8 @@ public class SpiderFactory {
 		AbstractSpider spiderObj = null;
 		Class<?> spider = null;
 		try {
-//			System.out.println(web);
-			spider = Class.forName("novel.crawler.spider." + web + "Spider");
+			// System.out.println(web);
+			spider = Class.forName("novel.crawler.spider." + Web.getEnumByUrl(web).toString() + "Spider");
 			if (spider != null) {
 				spiderObj = (AbstractSpider) spider.newInstance();
 			}

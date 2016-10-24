@@ -17,6 +17,7 @@ import novel.crawler.spider.AbstractSpider;
 public class CrawlerOnline {
 	public String bookStr = "诛仙";
 
+	@SuppressWarnings("unchecked")
 	public void Excute() {
 		// spiderFactory.SpiderGenerate(Web.BQG.toString());
 		List<AbstractSpider> list = new SpiderFactory().SpiderListGenerate();

@@ -1,27 +1,24 @@
 package novel.crawler.spider;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.junit.internal.Throwables;
 
 import novel.crawler.entity.Book;
 import novel.crawler.entity.Content;
@@ -119,39 +116,26 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	@Override
 	public String pickData(String url, String charset) {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+		System.out.println(url);
+		HttpGet httpget = new HttpGet(url);
+		httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(2_000).setConnectTimeout(10_000)
+				.setSocketTimeout(10_000).build());
+		Request.setDefaultNovelSpiderHeader(httpget);
+		CloseableHttpResponse response = null;
 		try {
-			System.out.println(url);
-			HttpGet httpget = new HttpGet(url);
-			httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(2_000).setConnectTimeout(10_000)
-					.setSocketTimeout(10_000).build());
-			Request.setDefaultNovelSpiderHeader(httpget);
-			CloseableHttpResponse response = null;
-			try {
-				CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-				response = httpclient.execute(httpget);
-				StatusLine statusLine = response.getStatusLine();
-				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-					return EntityUtils.toString(response.getEntity(), charset);
-				}
-			} finally {
-				response.close();
+			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+			response = httpClient.execute(httpget);
+			StatusLine statusLine = response.getStatusLine();
+			if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+				return EntityUtils.toString(response.getEntity(), charset);
+			} else {
+				throw new Exception("抓取失败，HTTP状态码：" + statusLine.getStatusCode());
 			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			// 关闭连接,释放资源
-			try {
-				httpclient.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			// FIXME: handle exception
+			throw new RuntimeException(e.toString());
+//			System.out.println(e.toString()); 
 		}
-		return null;
 	}
 
 	/**
@@ -266,16 +250,6 @@ public abstract class AbstractSpider implements INovelSpider {
 	public List<Book> getAllBooks(String url, Integer maxTryTime) {
 		return new ArrayList<Book>();
 	};
-
-	/**
-	 * 根据小说库主页获取分类url
-	 * 
-	 * @param url
-	 * @return 返回url list
-	 */
-	public List<String> getListUrl(String url) {
-		return new ArrayList<String>();
-	}
 
 	/**
 	 * (BXWX、KSZ用) 根据url获取小说实体列表

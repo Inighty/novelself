@@ -8,10 +8,20 @@ import org.junit.Test;
 import novel.crawler.entity.Book;
 import novel.crawler.factory.SpiderFactory;
 import novel.crawler.interfaces.INovelSpider;
+import novel.crawler.spider.BXWXSpider;
 import novel.crawler.spider.KSZSpider;
 
 public class SpiderTest {
 
+	@Test
+	public void testBXWX(){
+		BXWXSpider bxwxSpider = new BXWXSpider();
+		List<Book> books = bxwxSpider.getAllBooks("http://www.bxwx8.org/binitialS/0/1.htm",10);
+		for(Book book:books){
+			System.out.println(book.toString());
+		}
+	}
+	
 	@Test
 	public void testInterator(){
 		INovelSpider iNovelSpider = SpiderFactory.SpiderGenerate("KSZ");

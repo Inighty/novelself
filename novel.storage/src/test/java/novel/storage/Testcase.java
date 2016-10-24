@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
+import Impl.BXWXNovelStorageImpl;
 import Impl.KSZNovelStorageImpl;
 
 public class Testcase {
@@ -20,6 +21,12 @@ public class Testcase {
 	@Test
 	public void testProcessor() throws Exception{
 		Processor processor = new KSZNovelStorageImpl();
+		processor.process();
+	}
+	
+	@Test
+	public void testProcessorBXWX() throws Exception{
+		Processor processor = new BXWXNovelStorageImpl();
 		processor.process();
 	}
 }

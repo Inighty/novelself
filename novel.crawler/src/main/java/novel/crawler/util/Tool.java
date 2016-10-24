@@ -19,6 +19,7 @@ public class Tool {
 	/**
 	 * 构造函数
 	 */
+	@SuppressWarnings("unchecked")
 	public Tool() {
 
 		SAXReader reader = new SAXReader();
@@ -87,11 +88,10 @@ public class Tool {
 	 * @return
 	 */
 	public static int FormatStatus(String status) {
-		int statusInt=1;
+		int statusInt = 1;
 		if (status.contains("连载")) {
 			statusInt = 1;
-		}
-		else if(status.contains("完结")){
+		} else if (status.contains("完结") || status.contains("完成")) {
 			statusInt = 2;
 		}
 		return statusInt;

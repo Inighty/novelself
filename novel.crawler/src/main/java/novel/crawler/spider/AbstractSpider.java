@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
@@ -23,14 +27,15 @@ import novel.crawler.entity.Book;
 import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
-import novel.crawler.util.Common;
+import novel.crawler.util.Request;
+import novel.crawler.util.Tool;
 
 /**
  * @author Administrator 抽象类
  */
 public abstract class AbstractSpider implements INovelSpider {
 
-	protected Map<String, Map<String, org.dom4j.Element>> map = new Common().ruleMap;
+	protected Map<String, Map<String, org.dom4j.Element>> map = new Tool().ruleMap;
 	protected Map<String, org.dom4j.Element> webRule;
 	protected String web;
 	protected static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
@@ -118,13 +123,16 @@ public abstract class AbstractSpider implements INovelSpider {
 		try {
 			System.out.println(url);
 			HttpGet httpget = new HttpGet(url);
-			CloseableHttpResponse response = httpclient.execute(httpget);
+			httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(2_000).setConnectTimeout(10_000)
+					.setSocketTimeout(10_000).build());
+			Request.setDefaultNovelSpiderHeader(httpget);
+			CloseableHttpResponse response = null;
 			try {
-				// 获取响应实体
-				HttpEntity entity = response.getEntity();
-				// 打印响应状态
-				if (entity != null) {
-					return EntityUtils.toString(entity, charset);
+				CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+				response = httpclient.execute(httpget);
+				StatusLine statusLine = response.getStatusLine();
+				if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+					return EntityUtils.toString(response.getEntity(), charset);
 				}
 			} finally {
 				response.close();
@@ -200,7 +208,7 @@ public abstract class AbstractSpider implements INovelSpider {
 		if (parseElements != null && !parseElements.isEmpty()) {
 			for (org.dom4j.Element parseElement : parseElements) {
 				try {
-					crawlString = Common.replaceSpecifyString(crawlString, parseElement.attributeValue("to"));
+					crawlString = Tool.replaceSpecifyString(crawlString, parseElement.attributeValue("to"));
 				} catch (java.text.ParseException e) {
 					// FIXME 自动生成的 catch 块
 					e.printStackTrace();

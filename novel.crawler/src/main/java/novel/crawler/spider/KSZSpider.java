@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 import novel.crawler.entity.Book;
 import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
-import novel.crawler.util.Common;
+import novel.crawler.util.Tool;
 
 public class KSZSpider extends AbstractSpider implements INovelSpider {
 
@@ -67,8 +67,8 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 				book.setNewChapterUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
 				book.setAuthor(tds.get(3).text());
 				book.setAuthorUrl(tds.get(3).getElementsByTag("a").first().absUrl("href"));
-				book.setLastUpdateTime(Common.ConvertDate(tds.get(4).text(), "MM-dd"));
-				book.setStatus(Common.FormatStatus(tds.get(5).text()));
+				book.setLastUpdateTime(Tool.ConvertDate(tds.get(4).text(), "MM-dd"));
+				book.setStatus(Tool.FormatStatus(tds.get(5).text()));
 				book.setSource("看书中");
 				books.add(book);
 			}

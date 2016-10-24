@@ -15,9 +15,9 @@ public class SpiderTest {
 	@Test
 	public void testInterator(){
 		INovelSpider iNovelSpider = SpiderFactory.SpiderGenerate("KSZ");
-		iNovelSpider.getAllBooks("http://www.kanshuzhong.com/map/A/1/",10);
+		iNovelSpider.getAllBooks("http://www.kanshuzhong.com/map/U/1/",10);
 		System.out.println(iNovelSpider.hasNext());
-		System.out.println(iNovelSpider.next());
+//		System.out.println(iNovelSpider.next());
 	}
 
 	@Test

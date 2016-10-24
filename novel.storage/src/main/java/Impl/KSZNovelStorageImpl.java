@@ -68,13 +68,13 @@ public class KSZNovelStorageImpl implements Processor {
 
 		for (Entry<String, String> entry : Tasks.entrySet()) {
 			String key = entry.getKey();
-			final String vale = entry.getValue();
+			final String value = entry.getValue();
 			futrues.add(service.submit(new Callable<String>() {
 
 				@Override
 				public String call() throws Exception {
 					// FIXME Auto-generated method stub
-					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(Web.KSZ.toString()).iterator(vale, 10);
+					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(Web.KSZ.toString()).iterator(value, 10);
 					while (iterator.hasNext()) {
 						List<Book> books = iterator.next();
 						SqlSession session = sqlSessionFactory.openSession();

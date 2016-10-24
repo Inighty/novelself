@@ -21,6 +21,5 @@ public class Testcase {
 	public void testProcessor() throws Exception{
 		Processor processor = new KSZNovelStorageImpl();
 		processor.process();
-		
 	}
 }

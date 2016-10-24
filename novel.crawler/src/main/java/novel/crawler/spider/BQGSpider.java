@@ -13,7 +13,7 @@ import novel.crawler.entity.Chapter;
 import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
-import novel.crawler.util.Common;
+import novel.crawler.util.Tool;
 
 /**
  * @author Administrator 笔趣阁
@@ -64,7 +64,7 @@ public class BQGSpider extends AbstractSpider implements INovelSpider {
 							// book.setType();
 
 							book.setLastUpdateTime(
-									Common.ConvertDate(result.getElementsByTag("span").get(5).text(), "yy-MM-dd"));
+									Tool.ConvertDate(result.getElementsByTag("span").get(5).text(), "yy-MM-dd"));
 							return book;
 						}
 						// System.out.println(book.toString());

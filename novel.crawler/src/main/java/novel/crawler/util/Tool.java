@@ -12,14 +12,14 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-public class Common {
+public class Tool {
 
 	public final Map<String, Map<String, Element>> ruleMap = new HashMap<>();
 
 	/**
 	 * 构造函数
 	 */
-	public Common() {
+	public Tool() {
 
 		SAXReader reader = new SAXReader();
 		try {

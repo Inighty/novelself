@@ -35,6 +35,7 @@ public abstract class AbstractSpider implements INovelSpider {
 	protected Map<String, Map<String, org.dom4j.Element>> map = new Tool().ruleMap;
 	protected Map<String, org.dom4j.Element> webRule;
 	protected String web;
+	protected String charset;
 	protected static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
 	protected Element nextElement;
 	//// 下一页 书列表
@@ -86,7 +87,79 @@ public abstract class AbstractSpider implements INovelSpider {
 	 * @return 数据对象
 	 * @throws java.text.ParseException
 	 */
-	public abstract Object analyzeHTMLByString(Type type, String url);
+	@Override
+	public Object analyzeHTMLByString(Type type, String url) {
+
+		String html = pickData(url, charset);
+		//// 空直接返回
+		if (html.isEmpty() || null == html) {
+			return null;
+		}
+		parseDoc = Jsoup.parse(html, baseUrl);
+		switch (type) {
+		case booklist:
+			Elements listElements = parseDoc.getElementsByClass("result-list");
+			if (null != listElements) {
+				Element firstBook = listElements.get(0);
+				Element result = firstBook.getElementsByClass("result-game-item-detail").get(0);
+				if (null != result) {
+					Book book = new Book();
+					book.setName(result.getElementsByTag("a").first().text());
+					book.setUrl(result.select("a").attr("href").toString());
+
+					result = result.getElementsByClass("result-game-item-info").get(0);
+					if (null != result) {
+						//// 笔趣阁没有作者url
+						book.setAuthor(result.getElementsByTag("span").get(1).text());
+						book.setNewChapter(result.getElementsByAttribute("href").text());
+						book.setNewChapterUrl(result.select("a").attr("href").toString());
+
+						//// 先放着
+						// book.setType();
+
+						// book.setLastUpdateTime(
+						// Tool.ConvertDate(result.getElementsByTag("span").get(5).text(),
+						// "yy-MM-dd"));
+						return book;
+					}
+					// System.out.println(book.toString());
+				}
+			}
+			break;
+		// 先只取第一个吧
+		// List<Book> list = new ArrayList<Book>();
+		// listElements.forEach(s ->
+		// s.getElementsByClass("result-game-item-detail").forEach(x -> {
+		// Book book = new Book();
+		// book.name = x.getElementsByTag("a").first().text();
+		// book.url = x.select("a").attr("href").toString();
+		// x.getElementsByClass("result-game-item-info").forEach(o -> {
+		// book.author = o.getElementsByTag("span").get(1).text();
+		// book.newChapter = o.getElementsByAttribute("href").text();
+		// book.newChapterUrl = o.select("a").attr("href").toString();
+		// book.lastUpdateTime = o.getElementsByTag("span").get(5).text();
+		// System.out.println(book.toString());
+		// list.add(book);
+		// });
+		// }));
+		case chapterlist:
+
+			//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
+			
+			//// 这里将书的地址赋给下次需要处理的url中
+			bookUrl = url;
+			
+			return getChapters();
+		case content:
+			Content content = getContent(html, url);
+			return content;
+		default:
+			break;
+		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	public AbstractSpider(String web) {
 		webRule = map.get(web);

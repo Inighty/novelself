@@ -1,6 +1,7 @@
 package novel.web.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import novel.crawler.entity.Book;
 
@@ -18,4 +19,8 @@ public interface BookMapper {
 	public int updateByPrimaryKey(Book record);
 
 	public void batchInsert(List<Book> books);
+
+	public List<Book> getsNovelByKeyword(String keyword);
+
+	public List<Book> getsNovelByKeyword2(Map<String, String> map);
 }

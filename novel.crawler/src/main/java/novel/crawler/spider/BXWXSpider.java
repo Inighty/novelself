@@ -19,6 +19,7 @@ public class BXWXSpider extends AbstractSpider implements INovelSpider {
 	public BXWXSpider() {
 		super("BXWX");
 		super.baseUrl = baseUrl;
+		super.charset = charset;
 		// FIXME Auto-generated constructor stub
 	}
 
@@ -28,11 +29,6 @@ public class BXWXSpider extends AbstractSpider implements INovelSpider {
 		return null;
 	}
 
-	@Override
-	public String getCharset() {
-		// FIXME Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Object analyzeHTMLByString(Type type, String url) {

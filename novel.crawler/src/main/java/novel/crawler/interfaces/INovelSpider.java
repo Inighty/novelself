@@ -40,11 +40,6 @@ public interface INovelSpider {
 	public String getSearchBookUrl();
 
 	/**
-	 * 获取网页编码
-	 */
-	public String getCharset();
-
-	/**
 	 * 获取下一章Url
 	 * 
 	 * @param selector

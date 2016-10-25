@@ -21,6 +21,7 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 	public KSZSpider() {
 		super("KSZ");
 		super.baseUrl = baseUrl;
+		super.charset = charset;
 		// FIXME Auto-generated constructor stub
 	}
 
@@ -30,11 +31,6 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 		return null;
 	}
 
-	@Override
-	public String getCharset() {
-		// FIXME Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Object analyzeHTMLByString(Type type, String url) {

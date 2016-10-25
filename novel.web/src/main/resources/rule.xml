@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
+<!DOCTYPE xml> 
 <Rule>
 	<Site>
 		<name>BQG</name>
@@ -37,7 +37,7 @@
 		<novel-selector>.book_list tr</novel-selector>
 		<novel-nextpage-selector>#pagelink .next</novel-nextpage-selector>
 	</Site>
-	<Site>
+		<Site>
 		<name>BXWX</name>
 		<chapter-list-element selector="#list dd a" />
 		<!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->

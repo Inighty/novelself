@@ -7,8 +7,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
-import Impl.BXWXNovelStorageImpl;
-import Impl.KSZNovelStorageImpl;
+import novel.storage.Impl.BXWXNovelStorageImpl;
+import novel.storage.Impl.KSZNovelStorageImpl;
 
 public class Testcase {
 	@Test

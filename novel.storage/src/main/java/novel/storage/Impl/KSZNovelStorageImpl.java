@@ -1,4 +1,4 @@
-package Impl;
+package novel.storage.Impl;
 
 public class KSZNovelStorageImpl extends AbstractNovelStorageImpl {
 

@@ -18,7 +18,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.internal.Throwables;
 
 import novel.crawler.entity.Book;
 import novel.crawler.entity.Content;
@@ -101,12 +100,12 @@ public abstract class AbstractSpider implements INovelSpider {
 	 * @return 内容对象
 	 */
 	@Override
-	public Content getContent(String crawlString, String bookUrl) {
+	public Content getContent(String crawlString, String url) {
 		Content content = new Content();
 		content.setContent(getChapterContent(crawlString));
 		content.setTitle(getChapterName());
-		content.setNext(getNextUrl().isEmpty() ? getNextUrl() : bookUrl.concat(getNextUrl()));
-		content.setPre(getPreUrl().isEmpty() ? getPreUrl() : bookUrl.concat(getPreUrl()));
+		content.setNext(Tool.relativeUrl2FullUrl(url, getNextUrl()));
+		content.setPre(Tool.relativeUrl2FullUrl(url, getPreUrl()));
 		return content;
 	}
 
@@ -116,7 +115,6 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	@Override
 	public String pickData(String url, String charset) {
-		System.out.println(url);
 		HttpGet httpget = new HttpGet(url);
 		httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(2_000).setConnectTimeout(10_000)
 				.setSocketTimeout(10_000).build());
@@ -134,7 +132,7 @@ public abstract class AbstractSpider implements INovelSpider {
 		} catch (Exception e) {
 			// FIXME: handle exception
 			throw new RuntimeException(e.toString());
-//			System.out.println(e.toString()); 
+			// System.out.println(e.toString());
 		}
 	}
 
@@ -210,6 +208,7 @@ public abstract class AbstractSpider implements INovelSpider {
 	 */
 	@Override
 	public String getNextUrl() {
+
 		org.dom4j.Element element = webRule.get("content-this-next-element");
 		String selector = element.attributeValue("selector");
 		int index = element.attributeValue("index") == null ? 0 : Integer.parseInt(element.attributeValue("index"));
@@ -336,6 +335,5 @@ public abstract class AbstractSpider implements INovelSpider {
 			List<Book> books = getAllBooks(nextUrl, 10);
 			return books;
 		}
-
 	}
 }

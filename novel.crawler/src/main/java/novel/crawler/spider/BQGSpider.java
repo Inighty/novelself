@@ -90,22 +90,8 @@ public class BQGSpider extends AbstractSpider implements INovelSpider {
 			
 			//// 这里将书的地址赋给下次需要处理的url中
 			bookUrl = url;
-			Elements chapters = parseDoc.getElementById("list").getElementsByTag("dd");
-			if (chapters != null) {
-				List<Chapter> chapterList = new ArrayList<Chapter>();
-				chapters.forEach(o -> {
-					Chapter chapter = new Chapter();
-					String chapterUrl = o.select("a").attr("href").trim();
-					if (!chapterUrl.contains("http://")) {
-						chapterUrl = baseUrl.concat(chapterUrl);
-					}
-					chapter.setUrl(chapterUrl);
-					chapter.setTitle(o.getElementsByTag("a").text());
-					System.out.println(chapter.toString());
-					chapterList.add(chapter);
-				});
-				return chapterList;
-			}
+			
+
 			break;
 		case content:
 			Content content = getContent(html, url);

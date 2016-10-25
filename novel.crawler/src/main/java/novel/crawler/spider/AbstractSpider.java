@@ -20,6 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import novel.crawler.entity.Book;
+import novel.crawler.entity.Chapter;
 import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
@@ -90,6 +91,28 @@ public abstract class AbstractSpider implements INovelSpider {
 	public AbstractSpider(String web) {
 		webRule = map.get(web);
 		this.web = web;
+	}
+
+	public List<Chapter> getChapters() {
+		org.dom4j.Element element = webRule.get("chapter-list-element");
+		Elements aTags = parseDoc.select(element.attributeValue("selector"));
+		// Elements chapters =
+		// parseDoc.getElementById("list").getElementsByTag("dd");
+		List<Chapter> chapterList = new ArrayList<Chapter>();
+		if (aTags == null || aTags.isEmpty()) {
+		}
+		aTags.forEach(o -> {
+			Chapter chapter = new Chapter();
+			String chapterUrl = o.select("a").attr("href").trim();
+			if (!chapterUrl.contains("http://")) {
+				chapterUrl = baseUrl.concat(chapterUrl);
+			}
+			chapter.setUrl(chapterUrl);
+			chapter.setTitle(o.getElementsByTag("a").text());
+			// System.out.println(chapter.toString());
+			chapterList.add(chapter);
+		});
+		return chapterList;
 	}
 
 	/**

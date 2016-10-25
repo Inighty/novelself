@@ -5,6 +5,8 @@ import java.util.List;
 import org.junit.Test;
 
 import novel.crawler.entity.Book;
+import novel.crawler.entity.Chapter;
+import novel.crawler.enums.Type;
 import novel.crawler.factory.SpiderFactory;
 import novel.crawler.interfaces.INovelSpider;
 import novel.crawler.spider.BXWXSpider;
@@ -12,6 +14,15 @@ import novel.crawler.spider.KSZSpider;
 
 public class SpiderTest {
 
+	@Test
+	public void testBQGChapters(){
+		INovelSpider iNovelSpider = SpiderFactory.SpiderGenerate("BQG");
+		List<Chapter> list = (List<Chapter>)iNovelSpider.analyzeHTMLByString(Type.chapterlist, "http://www.biquge.tw/78_78031");
+		for(Chapter chapter:list){
+			System.out.println(chapter.toString());
+		}
+	}
+	
 	@Test
 	public void testBXWX(){
 		BXWXSpider bxwxSpider = new BXWXSpider();

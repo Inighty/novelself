@@ -25,7 +25,7 @@ public class NovelController {
 	private NovelService service;
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/ins/chapters.do", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getChapter(String url) {
 		List<Chapter> chapterList = (List<Chapter>) SpiderFactory.SpiderGenerate(url)
@@ -33,7 +33,7 @@ public class NovelController {
 		return JsonResponse.success(chapterList);
 	}
 
-	@RequestMapping(value = "/content.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/ins/content.do", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getContent(String url) {
 		Content content = (Content) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.content, url);
@@ -43,35 +43,39 @@ public class NovelController {
 	@RequestMapping(value = "/search.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse getsNovelByKeyword(String keyword) throws UnsupportedEncodingException {
-//		keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
+		// System.out.println(keyword);
+		// keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
+		// System.out.println(keyword);
 		return JsonResponse.success(service.getsNovelByKeyword(keyword));
 	}
 
 	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse getsNovelByKeyword(String keyword, String source) throws UnsupportedEncodingException {
+		keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
+		source = new String(source.getBytes("ISO-8859-1"), "utf-8");
 		return JsonResponse.success(service.getsNovelByKeyword(keyword, source));
 	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/chapterList.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
 	public ModelAndView showChapterList(String url) {
 		ModelAndView view = new ModelAndView();
-		view.setViewName("chapterList");
+		view.setViewName("chapters");
 		view.getModel().put("chapters",
 				(List<Chapter>) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.chapterlist, url));
 		view.getModel().put("baseUrl", url);
 		return view;
 	}
 
-	@RequestMapping(value = "/chapterDetail.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/content.do", method = RequestMethod.GET)
 	public ModelAndView showChapterDetail(String url, String baseUrl) {
 		ModelAndView view = new ModelAndView();
-		view.setViewName("chapterDetail");
+		view.setViewName("content");
 		try {
 			Content content = (Content) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.content, url);
 			content.setContent(content.getContent().replaceAll("\n", "<br>"));
-			view.getModel().put("chapterDetail", content);
+			view.getModel().put("content", content);
 			view.getModel().put("isSuccess", true);
 		} catch (Exception e) {
 			e.printStackTrace();

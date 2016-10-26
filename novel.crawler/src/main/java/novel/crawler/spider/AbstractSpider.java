@@ -145,10 +145,10 @@ public abstract class AbstractSpider implements INovelSpider {
 		case chapterlist:
 
 			//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
-			
+
 			//// 这里将书的地址赋给下次需要处理的url中
 			bookUrl = url;
-			
+
 			return getChapters();
 		case content:
 			Content content = getContent(html, url);
@@ -159,7 +159,6 @@ public abstract class AbstractSpider implements INovelSpider {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	public AbstractSpider(String web) {
 		webRule = map.get(web);
@@ -177,8 +176,14 @@ public abstract class AbstractSpider implements INovelSpider {
 		aTags.forEach(o -> {
 			Chapter chapter = new Chapter();
 			String chapterUrl = o.select("a").attr("href").trim();
+			if (!chapterUrl.startsWith("/")) {
+				chapterUrl = "/" + chapterUrl;
+			}
+			if(bookUrl.endsWith("/")){
+				bookUrl = bookUrl.substring(0,bookUrl.length()-1);
+			}
 			if (!chapterUrl.contains("http://")) {
-				chapterUrl = baseUrl.concat(chapterUrl);
+				chapterUrl = bookUrl.concat(chapterUrl);
 			}
 			chapter.setUrl(chapterUrl);
 			chapter.setTitle(o.getElementsByTag("a").text());

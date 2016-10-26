@@ -26,7 +26,7 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 	protected SqlSessionFactory sqlSessionFactory;
 
 	public AbstractNovelStorageImpl() throws Exception {
-		sqlSessionFactory = new SqlSessionFactoryBuilder().build(new FileInputStream("conf/SqlMapConfig.xml"));
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(new FileInputStream("/SqlMapConfig.xml"));
 	}
 
 	public void process() {

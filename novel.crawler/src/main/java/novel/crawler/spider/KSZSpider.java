@@ -8,7 +8,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import novel.crawler.entity.Book;
-import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
 import novel.crawler.util.Tool;
 
@@ -32,11 +31,6 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 	}
 
 
-	@Override
-	public Object analyzeHTMLByString(Type type, String url) {
-		// FIXME Auto-generated method stub
-		return null;
-	}
 
 	/**
 	 * (BXWX、KSZ用) 根据url获取小说实体列表

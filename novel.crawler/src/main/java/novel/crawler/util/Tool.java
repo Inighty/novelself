@@ -54,7 +54,7 @@ public class Tool {
 		if (specifyString != null && specifyString.startsWith("#{")) {
 			switch (specifyString) {
 			case "#{space}":
-				return content.replaceAll("#\\{space\\}", " ");
+				return content.replaceAll("#\\{space\\}", "&nbsp;");
 			case "#{line-break}":
 				return content.replaceAll("#\\{line-break\\}", "\n");
 			default:

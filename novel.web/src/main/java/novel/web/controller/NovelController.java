@@ -1,5 +1,6 @@
 package novel.web.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import novel.crawler.entity.Chapter;
 import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
 import novel.crawler.factory.SpiderFactory;
+import novel.crawler.util.Request;
 import novel.web.entity.JsonResponse;
 import novel.web.service.NovelService;
 
@@ -59,17 +61,20 @@ public class NovelController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
-	public ModelAndView showChapterList(String url) {
+	public ModelAndView showChapterList(String url) throws IOException {
+		url = Request.decryptBASE64(url);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("chapters");
 		view.getModel().put("chapters",
 				(List<Chapter>) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.chapterlist, url));
-		view.getModel().put("baseUrl", url);
+		view.getModel().put("baseUrl", Request.encryptBASE64(url));
 		return view;
 	}
 
 	@RequestMapping(value = "/content.do", method = RequestMethod.GET)
-	public ModelAndView showChapterDetail(String url, String baseUrl) {
+	public ModelAndView showChapterDetail(String url, String baseUrl) throws IOException {
+		url = Request.decryptBASE64(url);
+		baseUrl = Request.decryptBASE64(baseUrl);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("content");
 		try {
@@ -81,7 +86,8 @@ public class NovelController {
 			e.printStackTrace();
 			view.getModel().put("isSuccess", false);
 		}
-		view.getModel().put("baseUrl", baseUrl);
+		view.getModel().put("baseUrl", Request.encryptBASE64(url));
 		return view;
 	}
+
 }

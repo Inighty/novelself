@@ -1,11 +1,16 @@
 package novel.crawler.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.HttpMessage;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
+@SuppressWarnings("restriction")
 public class Request {
 	//// 爬虫的请求头
 	private static final Map<String, String> DEFAULT_NOVEL_SPIDER_HEADER = new HashMap<>();
@@ -28,6 +33,31 @@ public class Request {
 		for (String str : keySet) {
 			message.setHeader(str, DEFAULT_NOVEL_SPIDER_HEADER.get(str));
 		}
+	}
+	
+	
+
+	/**
+	 * BASE64解密
+	 * 
+	 * @param key
+	 * @return
+	 * @throws IOException 
+	 * @throws Exception
+	 */
+	public static String decryptBASE64(String key) throws IOException{
+		return new String(new BASE64Decoder().decodeBuffer(key));
+	}
+
+	/**
+	 * BASE64加密
+	 * 
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
+	public static String encryptBASE64(String key){
+		return (new BASE64Encoder()).encodeBuffer(key.getBytes());
 	}
 	
 }

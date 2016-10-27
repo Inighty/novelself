@@ -1,6 +1,5 @@
 package novel.storage.Impl;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,7 +24,11 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 	protected SqlSessionFactory sqlSessionFactory;
 
 	public AbstractNovelStorageImpl() throws Exception {
-		sqlSessionFactory = new SqlSessionFactoryBuilder().build(new FileInputStream("/SqlMapConfig.xml"));
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+//		String result = IOUtils.toString(classLoader.getResourceAsStream("rule.xml"), "utf8");
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(classLoader.getResourceAsStream("SqlMapConfig.xml"));
+//		sqlSessionFactory = new SqlSessionFactoryBuilder().build(new FileInputStream("/SqlMapConfig.xml"));
 	}
 
 	public void process() {
@@ -62,17 +64,17 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 		}
 		service.shutdown();
 
-		for (Future<String> future : futrues) {
-			try {
-				System.out.println("抓取[" + future.get() + "]结束!");
-			} catch (InterruptedException e) {
-				// FIXME Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// FIXME Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		for (Future<String> future : futrues) {
+//			try {
+//				System.out.println("抓取[" + future.get() + "]结束!");
+//			} catch (InterruptedException e) {
+//				// FIXME Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// FIXME Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 
 	}
 }

@@ -148,7 +148,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 			//// 这里将书的地址赋给下次需要处理的url中
 			bookUrl = url;
-
+			
 			return getChapters();
 		case content:
 			Content content = getContent(html, url);
@@ -179,13 +179,18 @@ public abstract class AbstractSpider implements INovelSpider {
 			if (!chapterUrl.startsWith("/")) {
 				chapterUrl = "/" + chapterUrl;
 			}
-			if(bookUrl.endsWith("/")){
-				bookUrl = bookUrl.substring(0,bookUrl.length()-1);
+			if (bookUrl.endsWith("/")) {
+				bookUrl = bookUrl.substring(0, bookUrl.length() - 1);
 			}
 			if (!chapterUrl.contains("http://")) {
 				chapterUrl = bookUrl.concat(chapterUrl);
 			}
-			chapter.setUrl(chapterUrl);
+			try {
+				chapter.setUrl(Request.encryptBASE64(chapterUrl));
+			} catch (Exception e) {
+				// FIXME Auto-generated catch block
+				e.printStackTrace();
+			}
 			chapter.setTitle(o.getElementsByTag("a").text());
 			// System.out.println(chapter.toString());
 			chapterList.add(chapter);

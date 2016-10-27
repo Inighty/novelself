@@ -7,12 +7,12 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="http://www.ifengxue.com/ifengxue/favicon.ico">
+    <link rel="icon" href="#">
 
     <title>小说搜搜-免费且无广告的小说阅读网</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
   </head>
 <body>
 	<div class="jumbotron">
@@ -66,17 +66,22 @@
 	<!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://www.ifengxue.com/ifengxue/res/js/1.11.3jquery.min.js"></script>
-    <script src="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-	<script src="http://www.ifengxue.com/ifengxue/res/js/base64.js"></script>
+    <script src="js/1.11.3jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/base64.js"></script>
 	<script type="text/javascript">
 	$(function() {
 		$("#btnSearch").click(search);
+		$("#keyword").keydown(function(e) {
+			if (e.keyCode == 13) {
+				search();
+			}
+		});
 	})
 	function search() {
 		var val = $("#keyword").val().trim();
 		if (val.length == 0) {
-			alert("请输入小说的名字或者作者的名字...");
+			//alert("请输入小说的名字或者作者的名字...");
 			return;
 		}
 		$.ajax({
@@ -87,13 +92,13 @@
 				"keyword" : val,
 			},
 			error: function (data) {
-				alert(data.status);
+				//alert(data.status);
 			},
 			success:function(result) {
 				$("#list").html("");
 				$(result.data).each(function(index,book){
 					//console.log(book.name);
-					var $tr = $("<tr><td>" + (index + 1) + "</td><td><a href='./chapters.do?url=" + book.url + "'>"
+					var $tr = $("<tr><td>" + (index + 1) + "</td><td><a href='./chapters.do?url=" + $.base64.encode(book.url) + "'>"
 							+ book.name + "</a></td><td>"
 							+ book.author + "</td><td>"
 							+ book.newChapter + "</td><td>"

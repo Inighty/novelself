@@ -10,14 +10,14 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="icon" href="http://www.ifengxue.com/ifengxue/favicon.ico">
+<link rel="icon" href="#">
 
 <!-- 章节标题 -->
 <title>${content.title }-章节内容-小说搜搜-免费且无广告的小说阅读网</title>
 
 <!-- Bootstrap core CSS -->
 <link
-	href="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/css/bootstrap.min.css"
+	href="css/bootstrap.min.css"
 	rel="stylesheet">
 <style>
 body {
@@ -62,7 +62,7 @@ body {
 				<div style="text-align: center;">
 					<a
 						href="./content.do?url=${content.pre}&baseUrl=${baseUrl}">前一章</a>
-					<a href="./chapters.do?url=${baseUrl }">章节列表</a> <a
+					<a href="./chapters.do?url=${baseUrl}">章节列表</a> <a
 						href="./content.do?url=${content.next }&baseUrl=${baseUrl}">后一章</a>
 				</div>
 			</c:if>
@@ -75,9 +75,9 @@ body {
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script
-		src="http://www.ifengxue.com/ifengxue/res/js/1.11.3jquery.min.js"></script>
+		src="js/1.11.3jquery.min.js"></script>
 	<script
-		src="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-	<script src="http://www.ifengxue.com/ifengxue/res/js/base64.js"></script>
+		src="js/bootstrap.min.js"></script>
+	<script src="js/base64.js"></script>
 </body>
 </html>

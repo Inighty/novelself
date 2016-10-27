@@ -37,6 +37,7 @@ public class BXWXSpider extends AbstractSpider implements INovelSpider {
 	 */
 	@Override
 	public List<Book> getAllBooks(String url, Integer maxTryTime) {
+		
 		List<Book> books = new ArrayList<Book>();
 		// String msg = "";
 		try {
@@ -48,7 +49,7 @@ public class BXWXSpider extends AbstractSpider implements INovelSpider {
 				// msg = tds.toString();
 //				book.setType(tds.first().text());
 				book.setName(tds.get(0).text());
-				book.setUrl(tds.get(0).getElementsByTag("a").first().absUrl("href"));
+				book.setUrl(tds.get(0).getElementsByTag("a").first().absUrl("href").replace("binfo", "b").replace(".htm", "/index.html"));
 				book.setNewChapter(tds.get(1).text());
 				book.setNewChapterUrl(tds.get(1).getElementsByTag("a").first().absUrl("href"));
 				book.setAuthor(tds.get(2).text());

@@ -10,13 +10,13 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="icon" href="http://www.ifengxue.com/ifengxue/favicon.ico">
+<link rel="icon" href="#">
 
 <title>章节列表-小说搜搜-免费且无广告的小说阅读网</title>
 
 <!-- Bootstrap core CSS -->
 <link
-	href="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/css/bootstrap.min.css"
+	href="css/bootstrap.min.css"
 	rel="stylesheet">
 <style>
 .jumbotron {
@@ -47,7 +47,7 @@
 				<tr>
 					<c:forEach items="${chapters}" var="chapter" varStatus="status">
 						<td><a
-							href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}">${chapter.title}</a>
+							href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}" target="_blank">${chapter.title}</a>
 						</td>
 						<c:if test="${status.count % 4 == 0}">
 						</tr>
@@ -62,10 +62,10 @@
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script
-		src="http://www.ifengxue.com/ifengxue/res/js/1.11.3jquery.min.js"></script>
+		src="js/1.11.3jquery.min.js"></script>
 	<script
-		src="http://www.ifengxue.com/ifengxue/res/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-	<script src="http://www.ifengxue.com/ifengxue/res/js/base64.js"></script>
+		src="js/bootstrap.min.js"></script>
+	<script src="js/base64.js"></script>
 	<script>
 		
 	</script>

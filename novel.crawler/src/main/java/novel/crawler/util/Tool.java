@@ -25,7 +25,7 @@ public class Tool {
 	public Tool() {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
-			String result = IOUtils.toString(classLoader.getResourceAsStream("rule.xml"), "utf8");
+			String result = IOUtils.toString(classLoader.getResourceAsStream("resources/rule.xml"), "utf8");
 			Document document = DocumentHelper.parseText(result);
 			Element root = document.getRootElement();
 			List<Element> site = root.elements("Site");
@@ -113,7 +113,7 @@ public class Tool {
 		if (absUrl.startsWith("http://")) {
 			return absUrl;
 		}
-		if(absUrl.startsWith("/")){
+		if (absUrl.startsWith("/")) {
 			absUrl = absUrl.substring(1);
 		}
 		int index = url.lastIndexOf("/");
@@ -122,6 +122,6 @@ public class Tool {
 		}
 		String after = url.substring(index + 1);
 		String newUrl = url.replace(after, absUrl);
-		return newUrl;
+		return Request.encryptBASE64(newUrl);
 	}
 }

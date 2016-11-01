@@ -24,11 +24,14 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 	protected SqlSessionFactory sqlSessionFactory;
 
 	public AbstractNovelStorageImpl() throws Exception {
-		
+
 		ClassLoader classLoader = getClass().getClassLoader();
-//		String result = IOUtils.toString(classLoader.getResourceAsStream("rule.xml"), "utf8");
+		// String result =
+		// IOUtils.toString(classLoader.getResourceAsStream("rule.xml"),
+		// "utf8");
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(classLoader.getResourceAsStream("SqlMapConfig.xml"));
-//		sqlSessionFactory = new SqlSessionFactoryBuilder().build(new FileInputStream("/SqlMapConfig.xml"));
+		// sqlSessionFactory = new SqlSessionFactoryBuilder().build(new
+		// FileInputStream("conf/SqlMapConfig.xml"));
 	}
 
 	public void process() {
@@ -44,17 +47,24 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 				@Override
 				public String call() throws Exception {
 					// FIXME Auto-generated method stub
-					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(value).iterator(value,
-							10);
+					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(value).iterator(value, 10);
 					while (iterator.hasNext()) {
 						List<Book> books = iterator.next();
 						if (books.size() == 0) {
 							continue;
 						}
+//						System.out.println("get " + books.size() + " books");
 						SqlSession session = sqlSessionFactory.openSession();
-						session.insert("batchInsert", books);
-						session.commit();
-						session.close();
+						try {
+							session.insert("batchInsert", books);
+							session.commit();
+						} catch (Exception e) {
+							System.out.println(e.toString());
+							throw new RuntimeException(e.toString());
+						} finally {
+							session.close();
+						}
+
 						Thread.sleep(1_000);
 					}
 					return key;
@@ -64,17 +74,17 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 		}
 		service.shutdown();
 
-//		for (Future<String> future : futrues) {
-//			try {
-//				System.out.println("抓取[" + future.get() + "]结束!");
-//			} catch (InterruptedException e) {
-//				// FIXME Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				// FIXME Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+		// for (Future<String> future : futrues) {
+		// try {
+		// System.out.println("抓取[" + future.get() + "]结束!");
+		// } catch (InterruptedException e) {
+		// // FIXME Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (ExecutionException e) {
+		// // FIXME Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// }
 
 	}
 }

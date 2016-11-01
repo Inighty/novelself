@@ -62,7 +62,9 @@ public class NovelController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
 	public ModelAndView showChapterList(String url) throws IOException {
+//		System.out.println("解码前:"+url);
 		url = Request.decryptBASE64(url);
+//		System.out.println("解码后:"+url);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("chapters");
 		view.getModel().put("chapters",
@@ -73,20 +75,25 @@ public class NovelController {
 
 	@RequestMapping(value = "/content.do", method = RequestMethod.GET)
 	public ModelAndView showChapterDetail(String url, String baseUrl) throws IOException {
-		url = Request.decryptBASE64(url);
-		baseUrl = Request.decryptBASE64(baseUrl);
+		////跳回章节列表
+		if(url.equals(baseUrl)){
+			return showChapterList(baseUrl);
+		}
+		String noBase64url = Request.decryptBASE64(url);
+//		String noBase64baseUrl = Request.decryptBASE64(baseUrl);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("content");
 		try {
-			Content content = (Content) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.content, url);
+			Content content = (Content) SpiderFactory.SpiderGenerate(noBase64url).analyzeHTMLByString(Type.content, noBase64url);
 			content.setContent(content.getContent().replaceAll("\n", "<br>"));
 			view.getModel().put("content", content);
 			view.getModel().put("isSuccess", true);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			view.getModel().put("isSuccess", false);
 		}
-		view.getModel().put("baseUrl", Request.encryptBASE64(url));
+		view.getModel().put("baseUrl", baseUrl);
 		return view;
 	}
 

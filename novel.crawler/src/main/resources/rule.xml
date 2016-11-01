@@ -45,15 +45,15 @@
 		<content-this-element selector="#content" index="0">
 			<!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
 			<parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
-			<parse to="#{line-break}"><![CDATA[<br/>]]></parse>
+			<parse to="#{line-break}"><![CDATA[<br />]]></parse>
 			<parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
 		</content-this-element>
-		<content-this-title-element selector="div.bookname h1"
+		<content-this-title-element selector="div#title"
 			index="0" />
-		<content-this-prev-element selector="#pager_prev"
-			index="0" />
-		<content-this-next-element selector="#pager_next"
-			index="0" />
+		<content-this-prev-element selector="#footlink a"
+			index="2" />
+		<content-this-next-element selector="#footlink a"
+			index="4" />
 		<novel-selector>.grid tr</novel-selector>
 		<novel-nextpage-selector>#pagelink .next</novel-nextpage-selector>
 	</Site>

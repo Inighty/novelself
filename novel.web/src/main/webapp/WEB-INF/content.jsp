@@ -16,9 +16,7 @@
 <title>${content.title }-章节内容-小说搜搜-免费且无广告的小说阅读网</title>
 
 <!-- Bootstrap core CSS -->
-<link
-	href="css/bootstrap.min.css"
-	rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
 <style>
 body {
 	background-color: #E5E4DB;
@@ -60,10 +58,11 @@ body {
 				<br />
 				<br />
 				<div style="text-align: center;">
-					<a
-						href="./content.do?url=${content.pre}&baseUrl=${baseUrl}">前一章</a>
+					<a href="./content.do?url=${content.pre}&baseUrl=${baseUrl}" id="apre"><span
+						id="pre">上一章</span></a>
 					<a href="./chapters.do?url=${baseUrl}">章节列表</a> <a
-						href="./content.do?url=${content.next }&baseUrl=${baseUrl}">后一章</a>
+						href="./content.do?url=${content.next }&baseUrl=${baseUrl}" id="anext"><span
+						id="next">下一章</span></a>
 				</div>
 			</c:if>
 			<c:if test="${!isSuccess }">
@@ -74,10 +73,19 @@ body {
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script
-		src="js/1.11.3jquery.min.js"></script>
-	<script
-		src="js/bootstrap.min.js"></script>
+	<script src="js/1.11.3jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
+	<script>
+		$(function() {
+			$(document).keydown(function(e) {
+				if (e.keyCode == 37) {
+					document.getElementById("apre").click();
+				} else if (e.keyCode == 39) {
+					document.getElementById("anext").click();
+				}
+			})
+		})
+	</script>
 </body>
 </html>

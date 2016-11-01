@@ -1,6 +1,9 @@
 package novel.crawler.spider;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +151,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 			//// 这里将书的地址赋给下次需要处理的url中
 			bookUrl = url;
-			
+
 			return getChapters();
 		case content:
 			Content content = getContent(html, url);
@@ -182,6 +185,9 @@ public abstract class AbstractSpider implements INovelSpider {
 			if (bookUrl.endsWith("/")) {
 				bookUrl = bookUrl.substring(0, bookUrl.length() - 1);
 			}
+			else if(bookUrl.endsWith("/index.html")){
+				bookUrl = bookUrl.replace("/index.html", "");
+			}
 			if (!chapterUrl.contains("http://")) {
 				chapterUrl = bookUrl.concat(chapterUrl);
 			}
@@ -193,8 +199,23 @@ public abstract class AbstractSpider implements INovelSpider {
 			}
 			chapter.setTitle(o.getElementsByTag("a").text());
 			// System.out.println(chapter.toString());
+
 			chapterList.add(chapter);
 		});
+		if (web.equals("BXWX")) {
+			Collections.sort(chapterList, new Comparator<Chapter>() { // 笔下文学爬取的章节需要重新排序
+				@Override
+				public int compare(Chapter o1, Chapter o2) {
+					try {
+						return Request.decryptBASE64(o1.getUrl()).compareTo(Request.decryptBASE64(o2.getUrl()));
+					} catch (IOException e) {
+						// FIXME Auto-generated catch block
+						e.printStackTrace();
+					}
+					return 0;
+				}
+			});
+		}
 		return chapterList;
 	}
 

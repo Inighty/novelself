@@ -25,7 +25,8 @@ public class Tool {
 	public Tool() {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
-			String result = IOUtils.toString(classLoader.getResourceAsStream("resources/rule.xml"), "utf8");
+//			String result = IOUtils.toString(classLoader.getResourceAsStream("resources/rule.xml"), "utf8");
+			String result = IOUtils.toString(classLoader.getResourceAsStream("rule.xml"), "utf8");
 			Document document = DocumentHelper.parseText(result);
 			Element root = document.getRootElement();
 			List<Element> site = root.elements("Site");

@@ -27,7 +27,7 @@
 	margin-right: 10px;
 }
 
-.container{
+.container {
 	padding-bottom: 10px;
 }
 </style>
@@ -44,6 +44,7 @@
 		</div>
 	</div>
 	<div class="container no-table-responsive">
+	<c:if test="${isSuccess}">
 		<table
 			class="table table-striped table-bordered table-condensed table-hover">
 			<thead>
@@ -52,30 +53,32 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<c:forEach items="${chapters}" var="chapter" varStatus="status">
-						<td><a
-							href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}&book=${book}"
-							target="_blank">${chapter.title}</a></td>
-						<c:set var="flag" scope="session" value="${isMobile}" />
-						<c:if test="${!flag}">
-							<c:if test="${status.count % 4 == 0}">
-				</tr>
-				<tr>
-					</c:if>
-					</c:if>
+					<tr>
+						<c:forEach items="${chapters}" var="chapter" varStatus="status">
+							<td><a
+								href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}&book=${book}"
+								target="_blank">${chapter.title}</a></td>
+							<c:set var="flag" scope="session" value="${isMobile}" />
+							<c:if test="${!flag}">
+								<c:if test="${status.count % 4 == 0}">
+									</tr>
+									<tr>
+								</c:if>
+							</c:if>
 
-					<c:if test="${flag}">
-				</tr>
-				<tr>
-					</c:if>
-
-					</c:forEach>
-
-				</tr>
+							<c:if test="${flag}">
+								</tr>
+								<tr>
+							</c:if>
+						</c:forEach>
+					</tr>
 			</tbody>
 		</table>
 		<a id="back-to-top" href="#top"><span></span>回到顶部</a>
+	</c:if>
+	<c:if test="${!isSuccess}">
+		很抱歉，读取章节列表失败了，请再试一次！
+	</c:if>
 	</div>
 	<!-- Bootstrap core JavaScript
     ================================================== -->

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="novel.storage.mapper.BookMapper" >
+<mapper namespace="novel.crawler.entity.BookMapper" >
   <resultMap id="BaseResultMap" type="novel.crawler.entity.Book" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
@@ -42,6 +42,16 @@
 		where name like #{keyword} or author like #{keyword} and
 		(source = #{source})
 	</select>
+
+	<select id="getsNovelByAuthor" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from book
+		where author = #{keyword}
+	</select>
+
+
 
 	<select id="judgeHave" resultMap="BaseResultMap" parameterType="list">
 		select
@@ -161,12 +171,13 @@
 			(#{item.name},#{item.author},#{item.url},#{item.type},#{item.newChapter},#{item.newChapterUrl},#{item.lastUpdateTime},#{item.status},#{item.source},NOW())
 		</foreach>
 		ON DUPLICATE KEY UPDATE
-		url = IF(last_update_time &lt; VALUES(last_update_time),VALUES(url),url),
-		new_chapter = IF(last_update_time &lt; VALUES(last_update_time),VALUES(new_chapter),new_chapter),
-		new_chapter_url = IF(last_update_time &lt; VALUES(last_update_time),VALUES(new_chapter_url),new_chapter_url),
-		source = IF(last_update_time &lt; VALUES(last_update_time),VALUES(source),source),
-		last_update_time=IF(last_update_time &lt; VALUES(last_update_time),VALUES(last_update_time),last_update_time),
-		update_time = IF(last_update_time &lt; VALUES(last_update_time),NOW(),update_time)
+		url = IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),VALUES(url),url),
+		new_chapter = IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),VALUES(new_chapter),new_chapter),
+		new_chapter_url = IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),VALUES(new_chapter_url),new_chapter_url),
+		source = IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),VALUES(source),source),
+		type = IF(((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说')) and type = '',VALUES(type),type),
+		last_update_time=IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),VALUES(last_update_time),last_update_time),
+		update_time = IF((last_update_time &lt; VALUES(last_update_time) and ((VALUES(source) != '龙腾小说') or (VALUES(source) = '龙腾小说' and source = '龙腾小说'))) or ((VALUES(source) != '龙腾小说') and source = '龙腾小说'),NOW(),update_time)
 	</insert>
   
   <update id="updateByPrimaryKeySelective" parameterType="novel.crawler.entity.Book" >

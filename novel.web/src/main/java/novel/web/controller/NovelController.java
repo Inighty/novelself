@@ -49,11 +49,15 @@ public class NovelController {
 
 	@RequestMapping(value = "/search.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse getsNovelByKeyword(String keyword) throws UnsupportedEncodingException {
+	public JsonResponse getsNovelByKeyword(String keyword, String flag) throws UnsupportedEncodingException {
 		// System.out.println(keyword);
 		// keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
 		// System.out.println(keyword);
-		return JsonResponse.success(service.getsNovelByKeyword(keyword));
+		if (flag=="") {
+			return JsonResponse.success(service.getsNovelByKeyword(keyword));
+		} else {
+			return JsonResponse.success(service.getsNovelByAuthor(keyword));
+		}
 	}
 
 	@RequestMapping(value = "/download.do", method = RequestMethod.POST)
@@ -67,14 +71,14 @@ public class NovelController {
 		// SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl);
 		return JsonResponse.success(SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl));
 	}
-
-	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse getsNovelByKeyword(String keyword, String source) throws UnsupportedEncodingException {
-		keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
-		source = new String(source.getBytes("ISO-8859-1"), "utf-8");
-		return JsonResponse.success(service.getsNovelByKeyword(keyword, source));
-	}
+//
+//	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)
+//	@ResponseBody
+//	public JsonResponse getsNovelByKeyword(String keyword, String source) throws UnsupportedEncodingException {
+//		keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
+//		source = new String(source.getBytes("ISO-8859-1"), "utf-8");
+//		return JsonResponse.success(service.getsNovelByKeyword(keyword, source));
+//	}
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
@@ -84,14 +88,20 @@ public class NovelController {
 		// System.out.println("½âÂëºó:"+url);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("chapters");
-		// view.addObject("isMobile",
-		// Request.checkAgentIsMobile(getUserAgent()));
-		view.getModel().put("book", new String(book.getBytes("ISO-8859-1"), "utf-8"));
-		view.getModel().put("bookUrl", Request.encryptBASE64(url));
-		view.getModel().put("isMobile", Request.checkAgentIsMobile(getUserAgent()));
-		view.getModel().put("chapters",
-				(List<Chapter>) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.chapterlist, url));
-		view.getModel().put("baseUrl", Request.encryptBASE64(url));
+		try {
+			// view.addObject("isMobile",
+			// Request.checkAgentIsMobile(getUserAgent()));
+			view.getModel().put("book", new String(book.getBytes("ISO-8859-1"), "utf-8"));
+			view.getModel().put("bookUrl", Request.encryptBASE64(url));
+			view.getModel().put("isMobile", Request.checkAgentIsMobile(getUserAgent()));
+			view.getModel().put("chapters",
+					(List<Chapter>) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.chapterlist, url));
+			view.getModel().put("baseUrl", Request.encryptBASE64(url));
+			view.getModel().put("isSuccess", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			view.getModel().put("isSuccess", false);
+		}
 		return view;
 	}
 
@@ -104,7 +114,7 @@ public class NovelController {
 		if (noBase64baseUrl.contains(noBase64url)) {
 			return showChapterList(baseUrl, book);
 		}
-		
+
 		// String noBase64baseUrl = Request.decryptBASE64(baseUrl);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("content");

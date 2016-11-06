@@ -22,7 +22,7 @@
 					<div class="input-group">
 						<input type="text" id="keyword" class="form-control"  placeholder="可以输入书名，作者名，宁少字，勿输错。。">
 						<span class="input-group-btn">
-							<button class="btn btn-default" type="button" id="btnSearch">搜一搜</button>
+							<button class="btn btn-default" type="button" id="btnSearch" onclick="searchByFlag('')">搜一搜</button>
 						</span>
 					</div>
 				</div>
@@ -73,19 +73,17 @@
 	<script src="js/base64.js"></script>
 	<script src="js/spin.min.js"></script>
 	<script type="text/javascript">
-	
-	
-	
 	$(function() {		
-		$("#btnSearch").click(search);
+		//$("#btnSearch").click(search);
+		//$("#author").click(search);
 		$("#keyword").keydown(function(e) {
 			if (e.keyCode == 13) {
-				search();
+				searchByFlag("");
 			}
 		});
 	})
-	function search() {
-		
+	
+	function searchByFlag(flag) {
 		var opts = {
 				  lines: 13 // The number of lines to draw
 				, length: 28 // The length of each line
@@ -108,9 +106,12 @@
 				, hwaccel: false // Whether to use hardware acceleration
 				, position: 'absolute' // Element positioning
 				}
-				var target = document.getElementById('loading');
-				var spinner = new Spinner(opts);
+		var target = document.getElementById('loading');
+		var spinner = new Spinner(opts);
 				
+		if(flag != ""){
+			$("#keyword").val(flag);
+		}
 		var val = $("#keyword").val().trim();
 		if (val.length == 0) {
 			//alert("请输入小说的名字或者作者的名字...");
@@ -123,6 +124,7 @@
 			dataType:"json",
 			data: {
 				"keyword" : val,
+				"flag" : flag,
 			},
 			error: function (data) {
 				spinner.spin();
@@ -133,15 +135,15 @@
 				$("#list").html("");
 				$(result.data).each(function(index,book){
 					var $tr = $("<tr><td>" + (index + 1) + "</td><td><a href='./chapters.do?url=" + $.base64.encode(book.url) + "&book=" + book.name + "'>"
-							+ book.name + "</a></td><td>"
-							+ book.author + "</td><td>"
+							+ book.name + "</a></td><td><a id='author' href='javascript:;' onclick='searchByFlag(\"" + book.author + "\")'>"
+							+ book.author + "</a></td><td>"
 							+ book.newChapter + "</td><td>"
 							+ (book.status == 1 ? "连载" : "完结") + "</td></tr>");
 					$("#list").append($tr);
 				});
 			}
 		});
-	};
+	}
 	</script>
 </body>
 </html>

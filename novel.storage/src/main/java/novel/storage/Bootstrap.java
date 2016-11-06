@@ -8,11 +8,11 @@ import novel.storage.Impl.LTNovelStorageImpl;
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
 		Processor processor = new KSZNovelStorageImpl();
-		// processor.process();
+		processor.process();
 		processor = new HHNovelStorageImpl();
 		processor.process();
-		// processor = new BXWXNovelStorageImpl();
-		// processor.process();
+		processor = new BXWXNovelStorageImpl();
+		processor.process();
 		processor = new LTNovelStorageImpl();
 		processor.process();
 

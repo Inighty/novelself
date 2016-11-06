@@ -29,7 +29,10 @@ public class NovelServiceImpl implements NovelService {
 		map.put("source", source + "");
 		return mapper.getsNovelByKeyword2(map);
 	}
-	
-	
+
+	@Override
+	public List<Book> getsNovelByAuthor(String keyword) {
+		return mapper.getsNovelByAuthor(keyword);
+	}
 
 }

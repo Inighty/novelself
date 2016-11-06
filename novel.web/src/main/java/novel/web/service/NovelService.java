@@ -18,4 +18,11 @@ public interface NovelService {
 	 * @return
 	 */
 	public List<Book> getsNovelByKeyword(String keyword, String source);
+	
+	/**
+	 * 查找对应作者的小说
+	 * @param keyword
+	 * @return
+	 */
+	public List<Book> getsNovelByAuthor(String keyword);
 }

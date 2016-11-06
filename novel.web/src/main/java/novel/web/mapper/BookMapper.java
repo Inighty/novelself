@@ -23,4 +23,6 @@ public interface BookMapper {
 	public List<Book> getsNovelByKeyword(String keyword);
 
 	public List<Book> getsNovelByKeyword2(Map<String, String> map);
+
+	public List<Book> getsNovelByAuthor(String keyword);
 }

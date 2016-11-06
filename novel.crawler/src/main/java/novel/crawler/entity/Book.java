@@ -138,10 +138,57 @@ public class Book implements IEntity {
 		this.addTime = addTime;
 	}
 
+	/**
+	 * 更新数据库时间
+	 */
+	private Date updateTime;
+	
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	@Override
 	public String toString() {
-		return "Book [name=" + name + ", url=" + url + ", author=" + author + ", authorUrl=" + authorUrl + ", type="
-				+ type + ", status=" + status + ", newChapter=" + newChapter + ", newChapterUrl=" + newChapterUrl
-				+ ", lastUpdateTime=" + lastUpdateTime + ", source=" + source + ", addTime=" + addTime + "]";
+		return "Book [id=" + id + ", name=" + name + ", url=" + url + ", author=" + author + ", authorUrl=" + authorUrl
+				+ ", type=" + type + ", status=" + status + ", newChapter=" + newChapter + ", newChapterUrl="
+				+ newChapterUrl + ", lastUpdateTime=" + lastUpdateTime + ", source=" + source + ", addTime=" + addTime
+				+ ", updateTime=" + updateTime + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((author == null) ? 0 : author.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Book other = (Book) obj;
+		if (author == null) {
+			if (other.author != null)
+				return false;
+		} else if (!author.equals(other.author))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+	
+	
 }

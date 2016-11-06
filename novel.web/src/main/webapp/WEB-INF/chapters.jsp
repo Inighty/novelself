@@ -12,15 +12,22 @@
 <meta name="author" content="">
 <link rel="icon" href="#">
 
-<title>章节列表-小说搜搜-免费且无广告的小说阅读网</title>
+<title>${book}-章节列表-小说搜搜-免费且无广告的小说阅读网</title>
 
 <!-- Bootstrap core CSS -->
-<link
-	href="css/bootstrap.min.css"
-	rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
 <style>
 .jumbotron {
 	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+#back-to-top {
+	float: right;
+	margin-right: 10px;
+}
+
+.container{
 	padding-bottom: 10px;
 }
 </style>
@@ -30,7 +37,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12">
-					<a href="./">回到搜索页</a>
+					<a href="./">回到搜索页</a> <a id="go-to-bottom" href=""><span></span>去到底部</a>
+					<a id="download-txt" href="javascript:;" qhref="${bookUrl}"><span></span>下载txt</a>
 				</div>
 			</div>
 		</div>
@@ -40,34 +48,90 @@
 			class="table table-striped table-bordered table-condensed table-hover">
 			<thead>
 				<tr>
-					<th colspan="4" style="text-align: center;">章节列表</th>
+					<th colspan="4" style="text-align: center;">${book}-章节列表</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
 					<c:forEach items="${chapters}" var="chapter" varStatus="status">
 						<td><a
-							href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}" target="_blank">${chapter.title}</a>
-						</td>
-						<c:if test="${status.count % 4 == 0}">
-						</tr>
-						<tr>
-						</c:if>
+							href="./content.do?url=${chapter.url}&baseUrl=${baseUrl}&book=${book}"
+							target="_blank">${chapter.title}</a></td>
+						<c:set var="flag" scope="session" value="${isMobile}" />
+						<c:if test="${!flag}">
+							<c:if test="${status.count % 4 == 0}">
+				</tr>
+				<tr>
+					</c:if>
+					</c:if>
+
+					<c:if test="${flag}">
+				</tr>
+				<tr>
+					</c:if>
+
 					</c:forEach>
+
 				</tr>
 			</tbody>
 		</table>
+		<a id="back-to-top" href="#top"><span></span>回到顶部</a>
 	</div>
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script
-		src="js/1.11.3jquery.min.js"></script>
-	<script
-		src="js/bootstrap.min.js"></script>
+	<script src="js/1.11.3jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
-	<script>
-		
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			$(function() {
+				$("#download-txt").click(function() {
+					var bookUrl = $("#download-txt").attr("qhref");
+					$.ajax({
+						url : "./download.do",
+						async : false,
+						type : "post",
+						dataType : "json",
+						data : {
+							"bookUrl" : bookUrl,
+						},
+						error : function(data) {
+							//alert(data.status);
+							console.log("error" + data.status);
+						},
+						success : function(result) {
+							//alert("url = " + result.data);
+							console.log(result.data);
+							location.href = result.data;
+
+						}
+					});
+				});
+
+				$(function() {
+
+					$("#back-to-top").click(function() {
+						$('body,html').animate({
+							scrollTop : 0
+						}, 1000);
+						return false;
+					});
+				});
+
+				$(function() {
+
+					$("#go-to-bottom").click(function() {
+						$('body,html').animate({
+							scrollTop : $('#back-to-top').offset().top
+						}, 1000);
+						return false;
+					});
+				});
+			})
+		})
 	</script>
 </body>
 </html>

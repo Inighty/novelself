@@ -14,6 +14,7 @@ import novel.crawler.spider.KSZSpider;
 
 public class SpiderTest {
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testBQGChapters(){
 		INovelSpider iNovelSpider = SpiderFactory.SpiderGenerate("BQG");

@@ -1,12 +1,18 @@
 package novel.crawler.spider;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
@@ -41,8 +47,16 @@ public abstract class AbstractSpider implements INovelSpider {
 	protected String charset;
 	protected static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
 	protected Element nextElement;
+	//// 当前列表key （如首字母A B C..即Task的key）
+	protected String presentKey;
 	//// 下一页 书列表
 	protected String nextUrl;
+	//// 记录对应字母的前一个月份<字母，<年,月份>> 为了知道有没有跨年
+	protected Map<String, int[]> lastMonth = new HashMap<>();
+
+	protected Calendar cal = Calendar.getInstance();
+	// 当前年
+	protected int year = cal.get(Calendar.YEAR);
 	/**
 	 * jsoup文本处理
 	 */
@@ -151,7 +165,6 @@ public abstract class AbstractSpider implements INovelSpider {
 
 			//// 这里将书的地址赋给下次需要处理的url中
 			bookUrl = url;
-
 			return getChapters();
 		case content:
 			Content content = getContent(html, url);
@@ -179,13 +192,12 @@ public abstract class AbstractSpider implements INovelSpider {
 		aTags.forEach(o -> {
 			Chapter chapter = new Chapter();
 			String chapterUrl = o.select("a").attr("href").trim();
-			if (!chapterUrl.startsWith("/")) {
+			if (!chapterUrl.startsWith("/") && !chapterUrl.startsWith("http://")) {
 				chapterUrl = "/" + chapterUrl;
 			}
 			if (bookUrl.endsWith("/")) {
 				bookUrl = bookUrl.substring(0, bookUrl.length() - 1);
-			}
-			else if(bookUrl.endsWith("/index.html")){
+			} else if (bookUrl.endsWith("/index.html")) {
 				bookUrl = bookUrl.replace("/index.html", "");
 			}
 			if (!chapterUrl.contains("http://")) {
@@ -243,15 +255,17 @@ public abstract class AbstractSpider implements INovelSpider {
 	@Override
 	public String pickData(String url, String charset) {
 		HttpGet httpget = new HttpGet(url);
-		httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(2_000).setConnectTimeout(10_000)
+		httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(10_000).setConnectTimeout(10_000)
 				.setSocketTimeout(10_000).build());
 		Request.setDefaultNovelSpiderHeader(httpget);
 		CloseableHttpResponse response = null;
+		CloseableHttpClient httpClient = null;
 		try {
-			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+			httpClient = HttpClientBuilder.create().build();
 			response = httpClient.execute(httpget);
 			StatusLine statusLine = response.getStatusLine();
 			if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+
 				return EntityUtils.toString(response.getEntity(), charset);
 			} else {
 				throw new Exception("抓取失败，HTTP状态码：" + statusLine.getStatusCode());
@@ -343,7 +357,11 @@ public abstract class AbstractSpider implements INovelSpider {
 		if (nextElement == null || !nextElement.attr("href").matches(CHAPTER_MATCH_RULE)) {
 			return "";
 		} else {
-			return nextElement.attr("href");
+			if (baseUrl.contains("23wx")||baseUrl.contains("51xsw")) {
+				return baseUrl + nextElement.attr("href");
+			} else {
+				return nextElement.attr("href");
+			}
 		}
 	}
 
@@ -362,8 +380,12 @@ public abstract class AbstractSpider implements INovelSpider {
 		if (prevElement == null || !prevElement.attr("href").matches(CHAPTER_MATCH_RULE)) {
 			return "";
 		} else {
-			String href = prevElement.attr("href");
-			return href;
+			if (baseUrl.contains("23wx")) {
+				return baseUrl + prevElement.attr("href");
+			} else {
+				return prevElement.attr("href");
+			}
+
 		}
 	}
 
@@ -378,21 +400,23 @@ public abstract class AbstractSpider implements INovelSpider {
 	};
 
 	/**
-	 * (BXWX、KSZ用) 根据url获取小说实体列表
+	 * 获取书列表tr
 	 * 
 	 * @param url
 	 * @param charset
-	 * @return 返回小说实体列表 "http://www.kanshuzhong.com/map/A/1/"
+	 * @return
 	 */
 	public Elements getTrs(String url, String charset) {
 		return getTrs(url, charset, INovelSpider.MAX_TRY_TIME);
 	};
 
 	/**
-	 * (BXWX、KSZ用) 根据url获取小说实体列表
+	 * 获取书列表tr
 	 * 
 	 * @param url
-	 * @return 返回小说实体列表 "http://www.kanshuzhong.com/map/A/1/"
+	 * @param charset
+	 * @param maxTryTime
+	 * @return
 	 */
 	public Elements getTrs(String url, String charset, Integer maxTryTime) {
 		maxTryTime = maxTryTime == null ? INovelSpider.MAX_TRY_TIME : maxTryTime;
@@ -406,16 +430,26 @@ public abstract class AbstractSpider implements INovelSpider {
 				}
 				Document document = Jsoup.parse(html, baseUrl);
 				trs = document.select(novelSelector);
-
 				String nextSelector = webRule.get("novel-nextpage-selector").getTextTrim();
-				if (nextSelector != null) {
-					Elements elements = document.select(nextSelector);
-					nextElement = elements == null ? null : elements.first();
-
-					if (nextElement != null) {
-						nextUrl = nextElement.absUrl("href");
+				Elements elements = document.select(nextSelector);
+				nextElement = elements == null ? null : elements.first();
+				//// 混混小说网没有下一页
+				if (baseUrl.contains("hunhun")) {
+					String[] page = nextElement.text().replaceAll("页", "").split("/");
+					if (!page[0].equals(page[1])) {
+						nextUrl = url.replaceAll("\\d+.html", (Integer.parseInt(page[0]) + 1) + ".html");
 					} else {
 						nextUrl = "";
+					}
+				} else {
+
+					if (nextSelector != null) {
+
+						if (nextElement != null) {
+							nextUrl = nextElement.absUrl("href");
+						} else {
+							nextUrl = "";
+						}
 					}
 				}
 
@@ -423,7 +457,6 @@ public abstract class AbstractSpider implements INovelSpider {
 			} catch (Exception e) {
 				// FIXME: handle exception
 			}
-
 		}
 		throw new RuntimeException(url + "尝试了" + maxTryTime + "次还是失败了..");
 	}
@@ -441,8 +474,9 @@ public abstract class AbstractSpider implements INovelSpider {
 	}
 
 	@Override
-	public Iterator<List<Book>> iterator(String presentUrl, Integer maxTryTime) {
+	public Iterator<List<Book>> iterator(String key, String presentUrl, Integer maxTryTime) {
 		// FIXME Auto-generated method stub
+		presentKey = key;
 		nextUrl = presentUrl;
 		return new NovelIterator();
 	}
@@ -462,5 +496,79 @@ public abstract class AbstractSpider implements INovelSpider {
 			List<Book> books = getAllBooks(nextUrl, 10);
 			return books;
 		}
+	}
+
+	@Override
+	public String getLastUpdateTime(String bookUrl) {
+		String result = "";
+		String html = pickData(bookUrl, charset);
+		String regex = "[0-9]{4}[\\-|/][0-9]{1,2}[\\-|/][0-9]{1,2}\\s+[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
+		final Pattern pattern = Pattern.compile(regex);
+		final Matcher matcher = pattern.matcher(html);
+
+		if (matcher.find()) {
+			result = matcher.group(0);
+		}
+		return result;
+	};
+
+	/**
+	 * 根据bookurl获取下载链接
+	 * 
+	 * @param bookurl
+	 * @return 返回txt下载链接
+	 */
+	public String getDownloadTxtUrl(String bookurl) {
+		return null;
+	}
+
+	/**
+	 * 字符串转Date
+	 * 
+	 * @param time
+	 * @param format
+	 * @return Date
+	 * @throws java.text.ParseException
+	 * @throws ParseException
+	 */
+	public Date ConvertDate(String time, String format) throws java.text.ParseException {
+		if (format.equals("MM-dd")) {
+			format = "yyyy-MM-dd";
+			int newMonth = Integer.parseInt(time.split("-")[0]);
+			//// 存在上一个月数据
+			if (lastMonth.containsKey(presentKey)) {
+				int oldYear = lastMonth.get(presentKey)[0];
+				int oldMonth = lastMonth.get(presentKey)[1];
+				int[] newInt = { oldYear, newMonth };
+				//// 如果新的月份比上一个大 那么就减1年
+				if (newMonth > lastMonth.get(presentKey)[1]) {
+					int newYear = oldYear - 1;
+					newInt[0] = newYear;
+					lastMonth.put(presentKey, newInt);
+					time = newYear + "-" + time;
+				} else {
+					if (newMonth < oldMonth) {
+						//// 更新月
+						lastMonth.put(presentKey, newInt);
+					}
+					time = oldYear + "-" + time;
+				}
+			}
+			//// 不存在上一个月数据
+			else {
+				int[] newInt = { year, newMonth };
+				lastMonth.put(presentKey, newInt);
+				time = year + "-" + time;
+			}
+		}
+
+		if (format.equals("yy-MM-dd")) {
+			format = "yyyy-MM-dd";
+			time = "20" + time;
+		}
+
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		Date date = sdf.parse(time);
+		return date;
 	}
 }

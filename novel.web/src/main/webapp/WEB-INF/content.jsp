@@ -13,7 +13,7 @@
 <link rel="icon" href="#">
 
 <!-- 章节标题 -->
-<title>${content.title }-章节内容-小说搜搜-免费且无广告的小说阅读网</title>
+<title>${content.title}-章节内容-小说搜搜-免费且无广告的小说阅读网</title>
 
 <!-- Bootstrap core CSS -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -39,15 +39,24 @@ body {
 </style>
 </head>
 <body>
+
+
 	<div class="jumbotron">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12">
-					<a href="./">回到搜索页</a>
+					<a href="./">回到搜索页</a> <a
+						href="./content.do?url=${content.pre}&baseUrl=${baseUrl}&book=${book}"
+						id="apre"><span id="pre">上一章</span></a> <a
+						href="./chapters.do?url=${baseUrl}&book=${book}">章节列表</a> <a
+						href="./content.do?url=${content.next }&baseUrl=${baseUrl}&book=${book}"
+						id="anext"><span id="next">下一章</span></a> <a id="go-to-bottom"
+						href=""><span></span>去到底部</a>
 				</div>
 			</div>
 		</div>
 	</div>
+
 	<div class="container">
 		<h3 style="text-align: center;">${content.title }</h3>
 		<!-- 章节内容区域 -->
@@ -58,11 +67,13 @@ body {
 				<br />
 				<br />
 				<div style="text-align: center;">
-					<a href="./content.do?url=${content.pre}&baseUrl=${baseUrl}" id="apre"><span
-						id="pre">上一章</span></a>
-					<a href="./chapters.do?url=${baseUrl}">章节列表</a> <a
-						href="./content.do?url=${content.next }&baseUrl=${baseUrl}" id="anext"><span
-						id="next">下一章</span></a>
+					<a
+						href="./content.do?url=${content.pre}&baseUrl=${baseUrl}&book=${book}"
+						id="apre"><span id="pre">上一章</span></a> <a
+						href="./chapters.do?url=${baseUrl}&book=${book}">章节列表</a> <a
+						href="./content.do?url=${content.next }&baseUrl=${baseUrl}&book=${book}"
+						id="anext"><span id="next">下一章</span></a> <a id="back-to-top"
+						href="#top"><span></span>回到顶部</a>
 				</div>
 			</c:if>
 			<c:if test="${!isSuccess }">
@@ -76,7 +87,7 @@ body {
 	<script src="js/1.11.3jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
-	<script>
+	<script type="text/javascript">
 		$(function() {
 			$(document).keydown(function(e) {
 				if (e.keyCode == 37) {
@@ -86,6 +97,46 @@ body {
 				}
 			})
 		})
+
+		$(document).ready(function() {
+			//首先将#back-to-top隐藏
+			//$("#back-to-top").hide();
+			//当滚动条的位置处于距顶部100像素以下时，跳转链接出现，否则消失
+			$(function() {
+				//$(window).scroll(function() {
+				//	if ($(window).scrollTop() > 100) {
+				//		$("#back-to-top").fadeIn(1500);
+				//	} else {
+				//		$("#back-to-top").fadeOut(1500);
+				//	}
+				//});
+				//当点击跳转链接后，回到页面顶部位置
+				$("#back-to-top").click(function() {
+					$('body,html').animate({
+						scrollTop : 0
+					}, 1000);
+					return false;
+				});
+			});
+
+			$(function() {
+				//$(window).scroll(function() {
+				//	if ($(window).scrollTop() > 100) {
+				//		$("#back-to-top").fadeIn(1500);
+				//	} else {
+				//		$("#back-to-top").fadeOut(1500);
+				//	}
+				//});
+				//当点击跳转链接后，回到页面顶部位置
+				$("#go-to-bottom").click(function() {
+					$('body,html').animate({
+						scrollTop : $('#back-to-top').offset().top
+					}, 1000);
+					return false;
+				});
+			});
+
+		});
 	</script>
 </body>
 </html>

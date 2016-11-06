@@ -3,7 +3,8 @@ package novel.crawler.enums;
 import java.io.Serializable;
 
 public enum Web implements Serializable {
-	BQG("BQG", "www.biquge.tw"), BXWX("BXWX", "www.bxwx8.org"), KSZ("KSZ", "www.kanshuzhong.com");
+	BQG("BQG", "www.biquge.tw"), BXWX("BXWX", "www.bxwx8.org"), KSZ("KSZ", "www.kanshuzhong.com"), DD("DD",
+			"www.23wx.com"), HH("HH", "www.hunhun520.com"), LT("LT", "www.51xsw.com");
 
 	private String name;
 

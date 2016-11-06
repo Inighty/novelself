@@ -24,4 +24,10 @@ public class BQGSpider extends AbstractSpider implements INovelSpider {
 		return url;
 	}
 
+	@Override
+	public String getLastUpdateTime(String html) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

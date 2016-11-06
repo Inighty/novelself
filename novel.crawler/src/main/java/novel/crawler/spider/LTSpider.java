@@ -9,17 +9,16 @@ import org.jsoup.select.Elements;
 
 import novel.crawler.entity.Book;
 import novel.crawler.interfaces.INovelSpider;
-import novel.crawler.util.Tool;
 
-public class KSZSpider extends AbstractSpider implements INovelSpider {
+public class LTSpider extends AbstractSpider implements INovelSpider {
 
-	public String baseUrl = "http://www.kanshuzhong.com";
+	public String baseUrl = "http://www.51xsw.com";
 	public String charset = "gbk";
 
 	// "http://zhannei.baidu.com/cse/search?s=16829369641378287696&q=";
 
-	public KSZSpider() {
-		super("KSZ");
+	public LTSpider() {
+		super("LT");
 		super.baseUrl = baseUrl;
 		super.charset = charset;
 		// FIXME Auto-generated constructor stub
@@ -46,22 +45,22 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 			Elements trs = super.getTrs(url, charset, maxTryTime);
 			for (int i = 1, size = trs.size() - 1; i < size; i++) {
 				Element tr = trs.get(i);
-				Elements tds = tr.getElementsByTag("td");
+				Elements tds = tr.getElementsByTag("span");
 				Book book = new Book();
 				// msg = tds.toString();
-				book.setType(tds.first().text());
+				book.setType(tds.first().text().replace("]", "").replace("[", ""));
 				book.setName(tds.get(1).text());
 				book.setUrl(tds.get(1).getElementsByTag("a").first().absUrl("href"));
 				book.setNewChapter(tds.get(2).text());
 				book.setNewChapterUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
 				book.setAuthor(tds.get(3).text());
-				book.setAuthorUrl(tds.get(3).getElementsByTag("a").first().absUrl("href"));
+				// book.setAuthorUrl(tds.get(3).getElementsByTag("a").first().absUrl("href"));
 				String date = tds.get(4).text();
 				book.setLastUpdateTime(ConvertDate(date, "MM-dd"));
-				book.setStatus(Tool.FormatStatus(tds.get(5).text()));
-				book.setSource("看书中");
+				// book.setStatus(Tool.FormatStatus(tds.get(5).text()));
+				book.setSource("龙腾小说");
 				books.add(book);
-//				Thread.sleep(1_000);
+				// Thread.sleep(1_000);
 			}
 		} catch (Exception e) {
 			// FIXME Auto-generated catch block
@@ -71,4 +70,16 @@ public class KSZSpider extends AbstractSpider implements INovelSpider {
 		return books;
 	}
 
+	/**
+	 * 根据bookurl获取下载链接
+	 * 
+	 * @param bookurl
+	 * @return 返回txt下载链接
+	 */
+	public String getDownloadTxtUrl(String bookUrl) {
+		// http://www.51xsw.com/25875.txt
+		// http://www.51xsw.com/25/25875/
+		String txtUrl = bookUrl.replaceFirst("\\/\\w+\\/", "/").replaceAll("[/]$", ".txt");
+		return txtUrl;
+	}
 }

@@ -1,9 +1,8 @@
 package novel.crawler.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +24,14 @@ public class Tool {
 	public Tool() {
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
-//			String result = IOUtils.toString(classLoader.getResourceAsStream("resources/rule.xml"), "utf8");
-			String result = IOUtils.toString(classLoader.getResourceAsStream("rule.xml"), "utf8");
+			InputStream stream = classLoader.getResourceAsStream("resources/rule.xml");
+			if (stream == null) {
+				stream = classLoader.getResourceAsStream("rule.xml");
+			}
+			String result = IOUtils.toString(stream, "utf8");
+			// String result =
+			// IOUtils.toString(classLoader.getResourceAsStream("rule.xml"),
+			// "utf8");
 			Document document = DocumentHelper.parseText(result);
 			Element root = document.getRootElement();
 			List<Element> site = root.elements("Site");
@@ -67,24 +72,6 @@ public class Tool {
 	}
 
 	/**
-	 * 字符串转Date
-	 * 
-	 * @param time
-	 * @param format
-	 * @return Date
-	 * @throws ParseException
-	 */
-	public static Date ConvertDate(String time, String format) throws ParseException {
-		if (format.equals("MM-dd")) {
-			format = "yyyy-MM-dd";
-			time = "2016-" + time;
-		}
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		Date date = sdf.parse(time);
-		return date;
-	}
-
-	/**
 	 * 统一小说状态 连载 完结
 	 * 
 	 * @param Status
@@ -112,7 +99,7 @@ public class Tool {
 	 */
 	public static String relativeUrl2FullUrl(String url, String absUrl) {
 		if (absUrl.startsWith("http://")) {
-			return absUrl;
+			return Request.encryptBASE64(absUrl);
 		}
 		if (absUrl.startsWith("/")) {
 			absUrl = absUrl.substring(1);

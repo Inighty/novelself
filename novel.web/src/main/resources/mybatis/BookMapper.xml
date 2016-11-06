@@ -46,6 +46,18 @@
 		(source = #{source})
 	</select>
 
+	<select id="judgeHave" resultMap="BaseResultMap" parameterType="list">
+		select
+		<include refid="Base_Column_List" />
+		from book
+		where (
+		<foreach collection="list" index="index" item="item"
+			separator="or">
+			(name = #{item.name} and url = #{item.url})
+		</foreach>
+		)
+	</select>
+
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
 		delete from book
 		where id = #{id,jdbcType=BIGINT}
@@ -65,6 +77,7 @@
 		#{newChapterUrl,jdbcType=VARCHAR},
 		#{lastUpdateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
 		#{source,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP})
+
 	</insert>
 	<insert id="insertSelective" parameterType="novel.crawler.entity.Book">
 		insert into book
@@ -139,17 +152,26 @@
 			</if>
 		</trim>
 	</insert>
+	
 	<insert id="batchInsert" parameterType="list">
 		insert into book
 		(name,author,url,type,new_chapter,new_chapter_url,last_update_time,status,source)
 		VALUES
 		<foreach collection="list" index="index" item="item"
 			separator=",">
-			(
-			#{item.name},#{item.author},#{item.url},#{item.type},#{item.newChapter},#{item.newChapterUrl},#{item.lastUpdateTime},#{item.status},#{item.source}
-			)
+			(#{item.name},#{item.author},#{item.url},#{item.type},#{item.newChapter},#{item.newChapterUrl},#{item.lastUpdateTime},#{item.status},#{item.source})
 		</foreach>
+		ON DUPLICATE KEY UPDATE
+		url = VALUES(url),
+		new_chapter =
+		VALUES(new_chapter),
+		new_chapter_url =
+		VALUES(new_chapter_url),
+		source = VALUES(source),
+		last_update_time=IF(last_update_time &lt; VALUES(last_update_time),VALUES(last_update_time),last_update_time)
 	</insert>
+
+
 	<update id="updateByPrimaryKeySelective" parameterType="novel.crawler.entity.Book">
 		update book
 		<set>
@@ -205,4 +227,7 @@
 		where id =
 		#{id,jdbcType=BIGINT}
 	</update>
+
+
+
 </mapper>

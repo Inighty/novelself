@@ -13,10 +13,11 @@
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="source" property="source" jdbcType="VARCHAR" />
     <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, author, url, type, new_chapter, new_chapter_url, last_update_time, status, 
-    source, add_time
+    source, add_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -24,6 +25,37 @@
     from book
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  	<select id="getsNovelByKeyword" resultMap="BaseResultMap"
+		parameterType="string">
+		select
+		<include refid="Base_Column_List" />
+		from book
+		where name like #{keyword} or author like #{keyword}
+	</select>
+
+	<select id="getsNovelByKeyword2" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from book
+		where name like #{keyword} or author like #{keyword} and
+		(source = #{source})
+	</select>
+
+	<select id="judgeHave" resultMap="BaseResultMap" parameterType="list">
+		select
+		<include refid="Base_Column_List" />
+		from book
+		where (
+		<foreach collection="list" index="index" item="item"
+			separator="or">
+			(name = #{item.name} and url = #{item.url})
+		</foreach>
+		)
+	</select>
+  
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from book
     where id = #{id,jdbcType=BIGINT}
@@ -32,11 +64,13 @@
     insert into book (id, name, author, 
       url, type, new_chapter, 
       new_chapter_url, last_update_time, status, 
-      source, add_time)
+      source, add_time, update_time
+      )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{newChapter,jdbcType=VARCHAR}, 
       #{newChapterUrl,jdbcType=VARCHAR}, #{lastUpdateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
-      #{source,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP})
+      #{source,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="novel.crawler.entity.Book" >
     insert into book
@@ -74,6 +108,9 @@
       <if test="addTime != null" >
         add_time,
       </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -109,18 +146,29 @@
       <if test="addTime != null" >
         #{addTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
     </trim>
   </insert>
-  <insert id="batchInsert" parameterType="list">
-  	insert into book
-  	(name,author,url,type,new_chapter,new_chapter_url,last_update_time,status,source)
-  	VALUES 
-  	<foreach collection="list" index="index" item="item" separator=",">
-  		(
-  			#{item.name},#{item.author},#{item.url},#{item.type},#{item.newChapter},#{item.newChapterUrl},#{item.lastUpdateTime},#{item.status},#{item.source}
-  		)
-  	</foreach>
-  </insert>
+  
+  	<insert id="batchInsert" parameterType="list">
+		insert into book
+		(name,author,url,type,new_chapter,new_chapter_url,last_update_time,status,source,update_time)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(#{item.name},#{item.author},#{item.url},#{item.type},#{item.newChapter},#{item.newChapterUrl},#{item.lastUpdateTime},#{item.status},#{item.source},NOW())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		url = IF(last_update_time &lt; VALUES(last_update_time),VALUES(url),url),
+		new_chapter = IF(last_update_time &lt; VALUES(last_update_time),VALUES(new_chapter),new_chapter),
+		new_chapter_url = IF(last_update_time &lt; VALUES(last_update_time),VALUES(new_chapter_url),new_chapter_url),
+		source = IF(last_update_time &lt; VALUES(last_update_time),VALUES(source),source),
+		last_update_time=IF(last_update_time &lt; VALUES(last_update_time),VALUES(last_update_time),last_update_time),
+		update_time = IF(last_update_time &lt; VALUES(last_update_time),NOW(),update_time)
+	</insert>
+  
   <update id="updateByPrimaryKeySelective" parameterType="novel.crawler.entity.Book" >
     update book
     <set >
@@ -154,6 +202,9 @@
       <if test="addTime != null" >
         add_time = #{addTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -168,7 +219,8 @@
       last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=INTEGER},
       source = #{source,jdbcType=VARCHAR},
-      add_time = #{addTime,jdbcType=TIMESTAMP}
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

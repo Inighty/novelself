@@ -20,14 +20,17 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="input-group">
-						<input type="text" id="keyword" class="form-control"  placeholder="可以输入书名，作者名，甚至可以是符合条件的URL...">
+						<input type="text" id="keyword" class="form-control"  placeholder="可以输入书名，作者名，宁少字，勿输错。。">
 						<span class="input-group-btn">
-							<button class="btn btn-default" type="button" id="btnSearch">小说搜搜</button>
+							<button class="btn btn-default" type="button" id="btnSearch">搜一搜</button>
 						</span>
 					</div>
 				</div>
 			</div>
 		</div>
+		
+		<div id="loading"></div>
+		
 	</div>
 	<div class="container no-table-responsive">
 		<table
@@ -39,7 +42,6 @@
 					<td>作者</td>
 					<td>最新章节</td>
 					<td>状态</td>
-					<td>来源</td>
 				</tr>
 			</thead>
 			<tbody id="list">
@@ -69,8 +71,12 @@
     <script src="js/1.11.3jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
+	<script src="js/spin.min.js"></script>
 	<script type="text/javascript">
-	$(function() {
+	
+	
+	
+	$(function() {		
 		$("#btnSearch").click(search);
 		$("#keyword").keydown(function(e) {
 			if (e.keyCode == 13) {
@@ -79,11 +85,38 @@
 		});
 	})
 	function search() {
+		
+		var opts = {
+				  lines: 13 // The number of lines to draw
+				, length: 28 // The length of each line
+				, width: 14 // The line thickness
+				, radius: 42 // The radius of the inner circle
+				, scale: 0.25 // Scales overall size of the spinner
+				, corners: 1 // Corner roundness (0..1)
+				, color: '#000' // #rgb or #rrggbb or array of colors
+				, opacity: 0.25 // Opacity of the lines
+				, rotate: 0 // The rotation offset
+				, direction: 1 // 1: clockwise, -1: counterclockwise
+				, speed: 1 // Rounds per second
+				, trail: 60 // Afterglow percentage
+				, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+				, zIndex: 2e9 // The z-index (defaults to 2000000000)
+				, className: 'spinner' // The CSS class to assign to the spinner
+				, top: '50%' // Top position relative to parent
+				, left: '50%' // Left position relative to parent
+				, shadow: false // Whether to render a shadow
+				, hwaccel: false // Whether to use hardware acceleration
+				, position: 'absolute' // Element positioning
+				}
+				var target = document.getElementById('loading');
+				var spinner = new Spinner(opts);
+				
 		var val = $("#keyword").val().trim();
 		if (val.length == 0) {
 			//alert("请输入小说的名字或者作者的名字...");
 			return;
 		}
+		spinner.spin(target);
 		$.ajax({
 			url:"./search.do",
 			type:"post",
@@ -92,18 +125,18 @@
 				"keyword" : val,
 			},
 			error: function (data) {
+				spinner.spin();
 				//alert(data.status);
 			},
 			success:function(result) {
+				spinner.spin();
 				$("#list").html("");
 				$(result.data).each(function(index,book){
-					//console.log(book.name);
-					var $tr = $("<tr><td>" + (index + 1) + "</td><td><a href='./chapters.do?url=" + $.base64.encode(book.url) + "'>"
+					var $tr = $("<tr><td>" + (index + 1) + "</td><td><a href='./chapters.do?url=" + $.base64.encode(book.url) + "&book=" + book.name + "'>"
 							+ book.name + "</a></td><td>"
 							+ book.author + "</td><td>"
 							+ book.newChapter + "</td><td>"
-							+ (book.status == 1 ? "连载" : "完结") + "</td><td>"
-							+ book.source + "</td></tr>");
+							+ (book.status == 1 ? "连载" : "完结") + "</td></tr>");
 					$("#list").append($tr);
 				});
 			}

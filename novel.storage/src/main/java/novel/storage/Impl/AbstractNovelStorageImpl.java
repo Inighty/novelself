@@ -32,59 +32,64 @@ public abstract class AbstractNovelStorageImpl implements Processor {
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(classLoader.getResourceAsStream("SqlMapConfig.xml"));
 		// sqlSessionFactory = new SqlSessionFactoryBuilder().build(new
 		// FileInputStream("conf/SqlMapConfig.xml"));
+		// FIXME Auto-generated method stub
+
 	}
 
 	public void process() {
-		// FIXME Auto-generated method stub
+
 		ExecutorService service = Executors.newFixedThreadPool(Tasks.size());
 		List<Future<String>> futrues = new ArrayList<>(Tasks.size());
 
 		for (Entry<String, String> entry : Tasks.entrySet()) {
 			String key = entry.getKey();
 			final String value = entry.getValue();
+
 			futrues.add(service.submit(new Callable<String>() {
 
 				@Override
 				public String call() throws Exception {
 					// FIXME Auto-generated method stub
-					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(value).iterator(value, 10);
+					Iterator<List<Book>> iterator = SpiderFactory.SpiderGenerate(value).iterator(key, value, 10);
 					while (iterator.hasNext()) {
 						List<Book> books = iterator.next();
+						if (value.contains("23wx")) {
+							books.stream().forEach(e -> e.setType(key));
+						}
 						if (books.size() == 0) {
 							continue;
 						}
-//						System.out.println("get " + books.size() + " books");
+
 						SqlSession session = sqlSessionFactory.openSession();
 						try {
 							session.insert("batchInsert", books);
-							session.commit();
 						} catch (Exception e) {
-							System.out.println(e.toString());
+							// FIXME: handle exception
 							throw new RuntimeException(e.toString());
-						} finally {
-							session.close();
 						}
 
+						finally {
+							// TODO: handle finally clause
+							session.commit();
+							session.close();
+						}
 						Thread.sleep(1_000);
 					}
 					return key;
 				}
-
 			}));
 		}
 		service.shutdown();
-
-		// for (Future<String> future : futrues) {
+		// process();
+		// //// 判断执行结束没
 		// try {
-		// System.out.println("抓取[" + future.get() + "]结束!");
+		// if (service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)) {
+		// Thread.sleep(1_000);
+		// process();
+		// }
 		// } catch (InterruptedException e) {
 		// // FIXME Auto-generated catch block
 		// e.printStackTrace();
-		// } catch (ExecutionException e) {
-		// // FIXME Auto-generated catch block
-		// e.printStackTrace();
 		// }
-		// }
-
 	}
 }

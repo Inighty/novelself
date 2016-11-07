@@ -37,6 +37,18 @@ body {
 	background-color: #F5F5F5;
 }
 </style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?13ab0b1b60fab3033c9eb9cb7ddbf67e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
 </head>
 <body>
 

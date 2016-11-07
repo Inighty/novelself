@@ -1,5 +1,6 @@
 package novel.web.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,17 @@ public class NovelServiceImpl implements NovelService {
 
 	@Override
 	public List<Book> getsNovelByKeyword(String keyword) {
-		keyword = "%" + keyword + "%";
-		return mapper.getsNovelByKeyword(keyword);
+		String likekeyword = "%" + keyword + "%";
+		List<Book> list = mapper.getsNovelByKeyword(likekeyword);
+		List<Book> listTemp = new ArrayList<Book>();
+		for (Book book : list) {
+			if (book.getName().equals(keyword)) {
+				listTemp.add(book);
+			}
+		}
+		list.removeAll(listTemp);
+		listTemp.addAll(list);
+		return listTemp;
 	}
 
 	@Override

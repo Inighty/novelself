@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="novel.crawler.entity.BookMapper" >
+<mapper namespace="novel.web.mapper.BookMapper" >
   <resultMap id="BaseResultMap" type="novel.crawler.entity.Book" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
@@ -27,11 +27,11 @@
   </select>
   
   	<select id="getsNovelByKeyword" resultMap="BaseResultMap"
-		parameterType="string">
+		parameterType="map">
 		select
 		<include refid="Base_Column_List" />
 		from book
-		where name like #{keyword} or author like #{keyword}
+		where name like #{likeKeyword} or author like #{likeKeyword} order by case when (name = #{keyword} or author = #{keyword}) then 1 else 0 end desc
 	</select>
 
 	<select id="getsNovelByKeyword2" resultMap="BaseResultMap"

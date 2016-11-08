@@ -18,8 +18,11 @@ public class NovelServiceImpl implements NovelService {
 
 	@Override
 	public List<Book> getsNovelByKeyword(String keyword) {
-		keyword = "%" + keyword + "%";
-		return mapper.getsNovelByKeyword(keyword);
+//		keyword = "%" + keyword + "%";
+		Map<String, String> map = new HashMap<>();
+		map.put("keyword", keyword);
+		map.put("likeKeyword", "%" + keyword + "%");
+		return mapper.getsNovelByKeyword(map);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package crawler;
 
 import novel.crawler.entity.Book;
 import novel.crawler.entity.Chapter;
+import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
 import novel.crawler.interfaces.INovelSpider;
 import novel.crawler.spider.Spider;
@@ -15,10 +16,10 @@ public class SpiderTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		INovelSpider iNovelSpider = new Spider("http://www.kanshuzhong.com/map/E/1/", Type.booklist);
-		List<Book> list = (List<Book>) iNovelSpider.analyzeHTMLByString();
-		for (Book chapter : list) {
-			System.out.println(chapter.toString());
-		}
+		INovelSpider iNovelSpider = new Spider("http://www.kanshuzhong.com/book/36456/25146620.html", Type.content);
+		Content list = (Content) iNovelSpider.analyzeHTMLByString();
+//		for (Book chapter : list) {
+		System.out.println(list.getContent().toString());
+//		}
 	}
 }

@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="#">
+     <link rel="icon" href="ico/favicon.ico">
 
     <title>小说搜搜-免费且无广告的小说阅读网</title>
 
@@ -20,13 +20,17 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="input-group">
-						<input type="text" id="keyword" class="form-control"  placeholder="可以输入书名，作者名，宁少字，勿输错。。">
+                        <input id="keyword" class="form-control" placeholder="可以输入书名，作者名，宁少字，勿输错。。">
 						<span class="input-group-btn">
 							<button class="btn btn-default" type="button" id="btnSearch" onclick="searchByFlag('')">搜一搜</button>
 						</span>
 					</div>
 				</div>
 			</div>
+            <div class="col-lg-12">
+                <div class="col-lg-12" id="history">
+                </div>
+            </div>
 		</div>
 		
 		<div id="loading"></div>
@@ -36,7 +40,7 @@
 		<table
 			class="table table-striped table-bordered table-condensed table-hover">
 			<thead>
-				<tr style="text-align:center;font-style:800;">
+            <tr style="text-align:center;font-style:normal;">
 					<th>#</th>
 					<td>书名</td>
 					<td>作者</td>
@@ -72,18 +76,70 @@
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
 	<script src="js/spin.min.js"></script>
+    <script src="js/cookie.js"></script>
 	<script type="text/javascript">
+        var keywordSelector = $("#keyword");
 	$(function() {		
 		//$("#btnSearch").click(search);
 		//$("#author").click(search);
-		$("#keyword").keydown(function(e) {
-			if (e.keyCode == 13) {
+        keywordSelector.keydown(function (e) {
+            if (e.keyCode === 13) {
 				searchByFlag("");
 			}
 		});
-	})
-	
-	function searchByFlag(flag) {
+        showHistory();
+    });
+
+
+        function showHistory() {
+            var history = decodeURI(getCookie("history"));
+            if (history.length) {
+                var splits = history.split("@@");
+                for (var i = 0; i < splits.length; i++) {
+                    if (splits[i].length) {
+                        $("#history").append('<a href="javascript:writeHistoryAndSearch(\'' + splits[i] + '\');">' + splits[i] + '</a>&nbsp;&nbsp;');
+                    }
+                }
+            }
+        }
+
+        function saveSearchHistory(keyword) {
+            var history = decodeURI(getCookie("history"));
+            if (!history.length) {
+                saveCookie("history", encodeURI(keyword + "@@"));
+            } else {
+                var splits = history.split("@@");
+                //检查是否有重复
+                for (var i = 0; i < splits.length; i++) {
+                    if (splits[i] === keyword) {
+                        return;		//已存在的关键词，不用保存
+                    }
+                }
+
+                if (splits.length >= 10) {
+                    //移除最早的历史记录，只保留最近的 10 条
+                    history = "";
+                    for (i = 1; i < 10; i++) {
+                        history += splits[i] + "@@";
+                    }
+                    // 将最新的一条插入到最后
+                    history += keyword + "@@";
+                    saveCookie("history", encodeURI(history));
+                } else {
+                    saveCookie("history", encodeURI(history + keyword + "@@"));
+                }
+            }
+        }
+
+
+        ////填入点击的历史记录并搜索
+        function writeHistoryAndSearch(history) {
+            $("#keyword").val(history);
+            searchByFlag("");
+        }
+
+
+        function searchByFlag(flag) {
 		var opts = {
 				  lines: 13 // The number of lines to draw
 				, length: 28 // The length of each line
@@ -105,28 +161,32 @@
 				, shadow: false // Whether to render a shadow
 				, hwaccel: false // Whether to use hardware acceleration
 				, position: 'absolute' // Element positioning
-				}
+        };
 		var target = document.getElementById('loading');
 		var spinner = new Spinner(opts);
-				
-		if(flag != ""){
-			$("#keyword").val(flag);
-		}
-		var val = $("#keyword").val().trim();
-		if (val.length == 0) {
+
+            if (flag !== "") {
+                keywordSelector.val(flag);
+            }
+            var val = keywordSelector.val().trim();
+            if (val.length === 0) {
 			//alert("请输入小说的名字或者作者的名字...");
 			return;
 		}
 		spinner.spin(target);
+
+            ////记录搜索记录
+            saveSearchHistory(val);
+
 		$.ajax({
 			url:"./search.do",
 			type:"post",
 			dataType:"json",
 			data: {
 				"keyword" : val,
-				"flag" : flag,
+                "flag": flag
 			},
-			error: function (data) {
+            error: function () {
 				spinner.spin();
 				//alert(data.status);
 			},
@@ -138,7 +198,7 @@
 							+ book.name + "</a></td><td><a id='author' href='javascript:;' onclick='searchByFlag(\"" + book.author + "\")'>"
 							+ book.author + "</a></td><td>"
 							+ book.newChapter + "</td><td>"
-							+ (book.status == 1 ? "连载" : "完结") + "</td></tr>");
+                        + (book.status === 1 ? "连载" : "完结") + "</td></tr>");
 					$("#list").append($tr);
 				});
 			}

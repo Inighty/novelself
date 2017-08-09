@@ -114,58 +114,60 @@
 	<!--<novel-nextpage-selector>#pagelink .next</novel-nextpage-selector>-->
 	<!--<novel-td-selector>span</novel-td-selector>-->
 	<!--</Site>-->
-	<Site>
-		<domain>www.hunhun520.com</domain>
-		<source>混混小说</source>
-		<charset>gbk</charset>
-		<chapter-list-element selector="#list dd a" />
-		<!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
-		<content-this-element selector="#content" index="0">
-			<!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
-			<parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
-			<parse to="#{line-break}"><![CDATA[<br />]]></parse>
-			<parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
-		</content-this-element>
-		<content-this-title-element selector="div.bookname h1"
-			index="0" />
-		<content-this-prev-element selector="div.bottem2 a"
-			index="0" />
-		<content-this-next-element selector="div.bottem2 a"
-			index="2" />
-		<novel-selector>.novelslist li</novel-selector>
-		<novel-nextpage-selector>.page span</novel-nextpage-selector>
-		<novel-td-selector>td</novel-td-selector>
-		<novel-book-list>
-			A,http://www.hunhun520.com/shuku/0_0_a_0_0_0_0_0_1.html;
-			B,http://www.hunhun520.com/shuku/0_0_b_0_0_0_0_0_1.html;
-			C,http://www.hunhun520.com/shuku/0_0_c_0_0_0_0_0_1.html;
-			D,http://www.hunhun520.com/shuku/0_0_d_0_0_0_0_0_1.html;
-			E,http://www.hunhun520.com/shuku/0_0_e_0_0_0_0_0_1.html;
-			F,http://www.hunhun520.com/shuku/0_0_f_0_0_0_0_0_1.html;
-			G,http://www.hunhun520.com/shuku/0_0_g_0_0_0_0_0_1.html;
-			H,http://www.hunhun520.com/shuku/0_0_h_0_0_0_0_0_1.html;
-			I,http://www.hunhun520.com/shuku/0_0_i_0_0_0_0_0_1.html;
-			J,http://www.hunhun520.com/shuku/0_0_j_0_0_0_0_0_1.html;
-			K,http://www.hunhun520.com/shuku/0_0_k_0_0_0_0_0_1.html;
-			L,http://www.hunhun520.com/shuku/0_0_l_0_0_0_0_0_1.html;
-			M,http://www.hunhun520.com/shuku/0_0_m_0_0_0_0_0_1.html;
-			N,http://www.hunhun520.com/shuku/0_0_n_0_0_0_0_0_1.html;
-			O,http://www.hunhun520.com/shuku/0_0_o_0_0_0_0_0_1.html;
-			P,http://www.hunhun520.com/shuku/0_0_p_0_0_0_0_0_1.html;
-			R,http://www.hunhun520.com/shuku/0_0_r_0_0_0_0_0_1.html;
-			S,http://www.hunhun520.com/shuku/0_0_s_0_0_0_0_0_1.html;
-			T,http://www.hunhun520.com/shuku/0_0_t_0_0_0_0_0_1.html;
-			Q,http://www.hunhun520.com/shuku/0_0_q_0_0_0_0_0_1.html;
-			U,http://www.hunhun520.com/shuku/0_0_u_0_0_0_0_0_1.html;
-			V,http://www.hunhun520.com/shuku/0_0_v_0_0_0_0_0_1.html;
-			W,http://www.hunhun520.com/shuku/0_0_w_0_0_0_0_0_1.html;
-			X,http://www.hunhun520.com/shuku/0_0_x_0_0_0_0_0_1.html;
-			Y,http://www.hunhun520.com/shuku/0_0_y_0_0_0_0_0_1.html;
-			Z,http://www.hunhun520.com/shuku/0_0_z_0_0_0_0_0_1.html;
-			0,http://www.hunhun520.com/shuku/0_0_1_0_0_0_0_0_1.html;
-			#,http://www.hunhun520.com/shuku/0_0_2_0_0_0_0_0_1.html;
-		</novel-book-list>
-	</Site>
+	<!--<Site>-->
+	<!--<domain>www.hunhun520.com</domain>-->
+	<!--<source>混混小说</source>-->
+	<!--<charset>gbk</charset>-->
+	<!--<chapter-list-element selector="#list dd a" />-->
+	<!--&lt;!&ndash; selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 &ndash;&gt;-->
+	<!--<content-this-element selector="#content" index="0">-->
+	<!--&lt;!&ndash; 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 &ndash;&gt;-->
+	<!--<parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>-->
+	<!--<parse to="#{line-break}"><![CDATA[<br />]]></parse>-->
+	<!--<parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>-->
+	<!--</content-this-element>-->
+	<!--<content-this-title-element selector="div.bookname h1"-->
+	<!--index="0" />-->
+	<!--<content-this-prev-element selector="div.bottem2 a"-->
+	<!--index="0" />-->
+	<!--<content-this-next-element selector="div.bottem2 a"-->
+	<!--index="2" />-->
+	<!--<content-split-element>div.text a</content-split-element>-->
+	<!--<content-need-remove>div.mb_29b div.text</content-need-remove>-->
+	<!--<novel-selector>.novelslist li</novel-selector>-->
+	<!--<novel-nextpage-selector>.page span</novel-nextpage-selector>-->
+	<!--<novel-td-selector>td</novel-td-selector>-->
+	<!--<novel-book-list>-->
+	<!--A,http://www.hunhun520.com/shuku/0_0_a_0_0_0_0_0_1.html;-->
+	<!--B,http://www.hunhun520.com/shuku/0_0_b_0_0_0_0_0_1.html;-->
+	<!--C,http://www.hunhun520.com/shuku/0_0_c_0_0_0_0_0_1.html;-->
+	<!--D,http://www.hunhun520.com/shuku/0_0_d_0_0_0_0_0_1.html;-->
+	<!--E,http://www.hunhun520.com/shuku/0_0_e_0_0_0_0_0_1.html;-->
+	<!--F,http://www.hunhun520.com/shuku/0_0_f_0_0_0_0_0_1.html;-->
+	<!--G,http://www.hunhun520.com/shuku/0_0_g_0_0_0_0_0_1.html;-->
+	<!--H,http://www.hunhun520.com/shuku/0_0_h_0_0_0_0_0_1.html;-->
+	<!--I,http://www.hunhun520.com/shuku/0_0_i_0_0_0_0_0_1.html;-->
+	<!--J,http://www.hunhun520.com/shuku/0_0_j_0_0_0_0_0_1.html;-->
+	<!--K,http://www.hunhun520.com/shuku/0_0_k_0_0_0_0_0_1.html;-->
+	<!--L,http://www.hunhun520.com/shuku/0_0_l_0_0_0_0_0_1.html;-->
+	<!--M,http://www.hunhun520.com/shuku/0_0_m_0_0_0_0_0_1.html;-->
+	<!--N,http://www.hunhun520.com/shuku/0_0_n_0_0_0_0_0_1.html;-->
+	<!--O,http://www.hunhun520.com/shuku/0_0_o_0_0_0_0_0_1.html;-->
+	<!--P,http://www.hunhun520.com/shuku/0_0_p_0_0_0_0_0_1.html;-->
+	<!--R,http://www.hunhun520.com/shuku/0_0_r_0_0_0_0_0_1.html;-->
+	<!--S,http://www.hunhun520.com/shuku/0_0_s_0_0_0_0_0_1.html;-->
+	<!--T,http://www.hunhun520.com/shuku/0_0_t_0_0_0_0_0_1.html;-->
+	<!--Q,http://www.hunhun520.com/shuku/0_0_q_0_0_0_0_0_1.html;-->
+	<!--U,http://www.hunhun520.com/shuku/0_0_u_0_0_0_0_0_1.html;-->
+	<!--V,http://www.hunhun520.com/shuku/0_0_v_0_0_0_0_0_1.html;-->
+	<!--W,http://www.hunhun520.com/shuku/0_0_w_0_0_0_0_0_1.html;-->
+	<!--X,http://www.hunhun520.com/shuku/0_0_x_0_0_0_0_0_1.html;-->
+	<!--Y,http://www.hunhun520.com/shuku/0_0_y_0_0_0_0_0_1.html;-->
+	<!--Z,http://www.hunhun520.com/shuku/0_0_z_0_0_0_0_0_1.html;-->
+	<!--0,http://www.hunhun520.com/shuku/0_0_1_0_0_0_0_0_1.html;-->
+	<!--#,http://www.hunhun520.com/shuku/0_0_2_0_0_0_0_0_1.html;-->
+	<!--</novel-book-list>-->
+	<!--</Site>-->
 	<!--<Site>-->
 	<!--<domain>www.51xsw.com</domain>-->
 	<!--<source>龙腾小说</source>-->

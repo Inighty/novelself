@@ -10,7 +10,7 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="icon" href="#">
+    <link rel="icon" href="ico/favicon.ico">
 
 <!-- 章节标题 -->
 <title>${content.title}-章节内容-小说搜搜-免费且无广告的小说阅读网</title>
@@ -88,11 +88,50 @@ body {
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/base64.js"></script>
 	<script type="text/javascript">
+        var doc = document;
+        doc.addEventListener("touchstart", startTouchScroll, false);
+        doc.addEventListener("touchmove", moveTouchScroll, false);
+        doc.addEventListener("touchend", endTouchScroll, false);
+        var startY, endY, startX, endX;
+
+        function startTouchScroll(event) {
+            var touch = event.touches[0];
+            startX = touch.pageX;
+            startY = touch.pageY;
+        }
+
+        function moveTouchScroll(event) {
+            var touch = event.touches[0];
+            endX = touch.pageX;
+            endY = touch.pageY;
+        }
+
+        function endTouchScroll(event) {
+            //判断移动的点,1为手指向下滑动,-1为手指向上滑动
+            var scrollDirection = (endY - startY) > 0 ? 1 : -1;
+            console.log("scrollDirection:" + scrollDirection);
+            //判断移动的点,1为手指向右滑动,-1为手指向左滑动
+            var scrollTranslation = (endX - startX) > 0 ? 1 : -1;
+            console.log("scrollTranslation:" + scrollTranslation);
+            //计算滑动距离
+            var scrollDistanceY = Math.abs(endY - startY);
+            console.log("scrollDistanceY:" + scrollDistanceY);
+            var scrollDistanceX = Math.abs(endX - startX);
+            console.log("scrollDistanceX:" + scrollDistanceX);
+            ////右滑 上一页
+            if (scrollDistanceX / scrollDistanceY > 10
+                && scrollTranslation === 1) {
+                document.getElementById("apre").click();
+            } else if (scrollDistanceX / scrollDistanceY > 10
+                && scrollTranslation === -1) {
+                document.getElementById("anext").click();
+            }
+        }
 		$(function() {
 			$(document).keydown(function(e) {
-				if (e.keyCode == 37) {
+                if (e.keyCode === 37) {
 					document.getElementById("apre").click();
-				} else if (e.keyCode == 39) {
+                } else if (e.keyCode === 39) {
 					document.getElementById("anext").click();
 				}
 			})

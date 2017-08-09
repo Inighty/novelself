@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
@@ -138,20 +139,25 @@ public class Spider implements INovelSpider {
 			return null;
 		}
 		parseDoc = Jsoup.parse(html, baseUrl);
-		switch (type) {
-			case booklist:
-				return getAllBooks(html);
-			case chapterlist:
-				//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
+		try {
+			switch (type) {
+				case booklist:
+					return getAllBooks(html);
+				case chapterlist:
+					//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
 
-				//// 这里将书的地址赋给下次需要处理的url中
-				bookUrl = web;
-				return getChapters();
-			case content:
-				return getContent(html, web);
-			case downloadUrl:
-			default:
-				return null;
+					//// 这里将书的地址赋给下次需要处理的url中
+					bookUrl = web;
+					return getChapters();
+				case content:
+					return getContent(html, web);
+				case downloadUrl:
+				default:
+					return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -210,7 +216,7 @@ public class Spider implements INovelSpider {
 	 * 获取内容对象
 	 *
 	 * @param crawlString 获取字符串
-	 * @param url 链接
+	 * @param url         链接
 	 * @return 内容对象
 	 */
 	@Override
@@ -280,37 +286,60 @@ public class Spider implements INovelSpider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String getChapterContent(String crawlString) {
+		StringBuilder result = new StringBuilder();
+		String temp = "";
+		String nextNode = "";
 		org.dom4j.Element contentElement = webRule.get("content-this-element");
 		List<org.dom4j.Element> parseElements = contentElement.elements("parse");
-		if (parseElements != null && !parseElements.isEmpty()) {
-			for (org.dom4j.Element parseElement : parseElements) {
-				crawlString = crawlString.replaceAll(parseElement.getText(),
-						parseElement.attributeValue("to") == null ? "" : parseElement.attributeValue("to"));
-			}
-		}
-		parseDoc = Jsoup.parse(crawlString);
-		Elements elements = parseDoc.select(contentElement.attributeValue("selector"));
-		if (elements == null || elements.isEmpty())
-			try {
-				throw new Exception("抓取规则不正确！");
-			} catch (Exception e) {
-				// FIXME 自动生成的 catch 块
-				e.printStackTrace();
-			}
-		int index = contentElement.attributeValue("index") == null ? 0
-				: Integer.parseInt(contentElement.attributeValue("index"));
-		crawlString = elements.get(index).text();
-		if (parseElements != null && !parseElements.isEmpty()) {
-			for (org.dom4j.Element parseElement : parseElements) {
-				try {
-					crawlString = Tool.replaceSpecifyString(crawlString, parseElement.attributeValue("to"));
-				} catch (java.text.ParseException e) {
-					// FIXME 自动生成的 catch 块
-					e.printStackTrace();
+		do {
+			temp = crawlString;
+			if (parseElements != null && !parseElements.isEmpty()) {
+				for (org.dom4j.Element parseElement : parseElements) {
+					crawlString = crawlString.replaceAll(parseElement.getText(),
+							parseElement.attributeValue("to") == null ? "" : parseElement.attributeValue("to"));
 				}
 			}
+			parseDoc = Jsoup.parse(crawlString);
+			Elements elements = parseDoc.select(contentElement.attributeValue("selector"));
+			if (crawlString.contains("下一节</a>")) {
+				String splitStr = webRule.get("content-split-element").getTextTrim();
+				Elements nextElements = parseDoc.select(splitStr);
+				nextNode = nextElements.get(2).getElementsByTag("a").first().absUrl("href");
+			}
+
+
+			int index = contentElement.attributeValue("index") == null ? 0
+					: Integer.parseInt(contentElement.attributeValue("index"));
+			String content = elements.get(index).text();
+			org.dom4j.Element needRemove = webRule.get("content-need-remove");
+			if (needRemove != null) {
+				for (String string : needRemove.getTextTrim().split(" ")) {
+					elements.select(string).remove();
+				}
+				crawlString = content.substring(0, content.lastIndexOf("#{line-break}") - 1);
+			} else {
+				crawlString = content;
+			}
+
+
+			if (parseElements != null && !parseElements.isEmpty()) {
+				for (org.dom4j.Element parseElement : parseElements) {
+					try {
+						crawlString = Tool.replaceSpecifyString(crawlString, parseElement.attributeValue("to"));
+					} catch (java.text.ParseException e) {
+						// FIXME 自动生成的 catch 块
+						e.printStackTrace();
+					}
+				}
+			}
+			result.append(crawlString);
+
+			if (!nextNode.isEmpty()) {
+				crawlString = pickData(nextNode, charset);
+			}
 		}
-		return crawlString;
+		while (temp.contains("下一节</a>"));
+		return result.toString();
 	}
 
 	/**
@@ -328,7 +357,7 @@ public class Spider implements INovelSpider {
 		if (nextElement == null || !nextElement.attr("href").matches(CHAPTER_MATCH_RULE)) {
 			return "";
 		} else {
-			if (baseUrl.contains("23wx")||baseUrl.contains("51xsw")) {
+			if (baseUrl.contains("23wx") || baseUrl.contains("51xsw")) {
 				return baseUrl + nextElement.attr("href");
 			} else {
 				return nextElement.attr("href");
@@ -394,7 +423,9 @@ public class Spider implements INovelSpider {
 			// FIXME: handle exception
 		}
 		return books;
-	};
+	}
+
+	;
 
 	/**
 	 * 获取书列表tr
@@ -485,7 +516,9 @@ public class Spider implements INovelSpider {
 			result = matcher.group(0);
 		}
 		return result;
-	};
+	}
+
+	;
 
 	/**
 	 * 根据bookurl获取下载链接
@@ -514,7 +547,7 @@ public class Spider implements INovelSpider {
 			if (lastMonth.containsKey(presentKey)) {
 				int oldYear = lastMonth.get(presentKey)[0];
 				int oldMonth = lastMonth.get(presentKey)[1];
-				int[] newInt = { oldYear, newMonth };
+				int[] newInt = {oldYear, newMonth};
 				//// 如果新的月份比上一个大 那么就减1年
 				if (newMonth > lastMonth.get(presentKey)[1]) {
 					int newYear = oldYear - 1;
@@ -531,7 +564,7 @@ public class Spider implements INovelSpider {
 			}
 			//// 不存在上一个月数据
 			else {
-				int[] newInt = { year, newMonth };
+				int[] newInt = {year, newMonth};
 				lastMonth.put(presentKey, newInt);
 				time = year + "-" + time;
 			}

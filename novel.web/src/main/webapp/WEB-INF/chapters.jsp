@@ -10,7 +10,7 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="icon" href="#">
+    <link rel="icon" href="ico/favicon.ico">
 
 <title>${book}-章节列表-小说搜搜-免费且无广告的小说阅读网</title>
 

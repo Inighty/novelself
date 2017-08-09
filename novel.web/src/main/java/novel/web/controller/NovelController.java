@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import novel.crawler.spider.Spider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 import novel.crawler.entity.Chapter;
 import novel.crawler.entity.Content;
 import novel.crawler.enums.Type;
-import novel.crawler.factory.SpiderFactory;
 import novel.crawler.util.Request;
 import novel.web.entity.JsonResponse;
 import novel.web.service.NovelService;
@@ -31,19 +31,17 @@ public class NovelController {
 	@Autowired
 	private HttpServletRequest request;
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/ins/chapters.do", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getChapter(String url) {
-		List<Chapter> chapterList = (List<Chapter>) SpiderFactory.SpiderGenerate(url)
-				.analyzeHTMLByString(Type.chapterlist, url);
+		List<Chapter> chapterList = (List<Chapter>) new Spider(url, Type.chapterlist).analyzeHTMLByString();
 		return JsonResponse.success(chapterList);
 	}
 
 	@RequestMapping(value = "/ins/content.do", method = RequestMethod.GET)
 	@ResponseBody
 	public JsonResponse getContent(String url) {
-		Content content = (Content) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.content, url);
+		Content content = (Content) new Spider(url, Type.content).analyzeHTMLByString();
 		return JsonResponse.success(content);
 	}
 
@@ -53,7 +51,7 @@ public class NovelController {
 		// System.out.println(keyword);
 		// keyword = new String(keyword.getBytes("ISO-8859-1"), "utf-8");
 		// System.out.println(keyword);
-		if (flag=="") {
+		if (flag.equals("")) {
 			return JsonResponse.success(service.getsNovelByKeyword(keyword));
 		} else {
 			return JsonResponse.success(service.getsNovelByAuthor(keyword));
@@ -69,7 +67,7 @@ public class NovelController {
 		// System.out.println(keyword);
 		// return
 		// SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl);
-		return JsonResponse.success(SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl));
+		return JsonResponse.success(new Spider(bookUrl, Type.downloadUrl).getDownloadTxtUrl(bookUrl));
 	}
 //
 //	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)
@@ -83,9 +81,9 @@ public class NovelController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chapters.do", method = RequestMethod.GET)
 	public ModelAndView showChapterList(String url, String book) throws IOException {
-		// System.out.println("½âÂëÇ°:"+url);
+		// System.out.println("ï¿½ï¿½ï¿½ï¿½Ç°:"+url);
 		url = Request.decryptBASE64(url);
-		// System.out.println("½âÂëºó:"+url);
+		// System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½:"+url);
 		ModelAndView view = new ModelAndView();
 		view.setViewName("chapters");
 		try {
@@ -94,8 +92,7 @@ public class NovelController {
 			view.getModel().put("book", new String(book.getBytes("ISO-8859-1"), "utf-8"));
 			view.getModel().put("bookUrl", Request.encryptBASE64(url));
 			view.getModel().put("isMobile", Request.checkAgentIsMobile(getUserAgent()));
-			view.getModel().put("chapters",
-					(List<Chapter>) SpiderFactory.SpiderGenerate(url).analyzeHTMLByString(Type.chapterlist, url));
+			view.getModel().put("chapters", new Spider(url, Type.chapterlist).analyzeHTMLByString());
 			view.getModel().put("baseUrl", Request.encryptBASE64(url));
 			view.getModel().put("isSuccess", true);
 		} catch (Exception e) {
@@ -110,7 +107,6 @@ public class NovelController {
 
 		String noBase64url = Request.decryptBASE64(url);
 		String noBase64baseUrl = Request.decryptBASE64(baseUrl);
-		//// Ìø»ØÕÂ½ÚÁÐ±í
 		if (noBase64baseUrl.contains(noBase64url)) {
 			return showChapterList(baseUrl, book);
 		}
@@ -119,8 +115,7 @@ public class NovelController {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("content");
 		try {
-			Content content = (Content) SpiderFactory.SpiderGenerate(noBase64url).analyzeHTMLByString(Type.content,
-					noBase64url);
+			Content content = (Content) new Spider(noBase64url, Type.content).analyzeHTMLByString();
 			content.setContent(content.getContent().replaceAll("\n", "<br>"));
 			view.getModel().put("book", new String(book.getBytes("ISO-8859-1"), "utf-8"));
 			view.getModel().put("content", content);

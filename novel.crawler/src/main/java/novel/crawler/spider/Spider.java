@@ -1,11 +1,8 @@
 package novel.crawler.spider;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,28 +36,28 @@ import novel.crawler.util.Tool;
 /**
  * @author Administrator 抽象类
  */
-public abstract class AbstractSpider implements INovelSpider {
+public class Spider implements INovelSpider {
 
-	protected Map<String, Map<String, org.dom4j.Element>> map = new Tool().ruleMap;
-	protected Map<String, org.dom4j.Element> webRule;
+	private Tool tool;
+	Map<String, org.dom4j.Element> webRule;
 	protected String web;
-	protected String charset;
-	protected static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
-	protected Element nextElement;
+	private String charset;
+	protected Type type;
+	private static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
 	//// 当前列表key （如首字母A B C..即Task的key）
-	protected String presentKey;
+	private String presentKey;
 	//// 下一页 书列表
-	protected String nextUrl;
+	private String nextUrl;
 	//// 记录对应字母的前一个月份<字母，<年,月份>> 为了知道有没有跨年
-	protected Map<String, int[]> lastMonth = new HashMap<>();
+	private Map<String, int[]> lastMonth = new HashMap<>();
 
-	protected Calendar cal = Calendar.getInstance();
+	private Calendar cal = Calendar.getInstance();
 	// 当前年
-	protected int year = cal.get(Calendar.YEAR);
+	private int year = cal.get(Calendar.YEAR);
 	/**
 	 * jsoup文本处理
 	 */
-	protected Document parseDoc;
+	Document parseDoc;
 
 	public Document getParseDoc() {
 		return parseDoc;
@@ -70,23 +67,23 @@ public abstract class AbstractSpider implements INovelSpider {
 	 * 基础域名
 	 */
 	protected String baseUrl;
-
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public void setParseDoc(Document parseDoc) {
-		this.parseDoc = parseDoc;
-	}
+//
+//	public String getBaseUrl() {
+//		return baseUrl;
+//	}
+//
+//	public void setBaseUrl(String baseUrl) {
+//		this.baseUrl = baseUrl;
+//	}
+//
+//	public void setParseDoc(Document parseDoc) {
+//		this.parseDoc = parseDoc;
+//	}
 
 	/**
 	 * book的url 后面替换章节url用
 	 */
-	protected String bookUrl;
+	private String bookUrl;
 
 	public String getBookUrl() {
 		return bookUrl;
@@ -96,89 +93,66 @@ public abstract class AbstractSpider implements INovelSpider {
 		this.bookUrl = bookUrl;
 	}
 
+	public Spider(String web, Tool tool, Type type) {
+		this.tool = tool;
+		Init(web, type);
+	}
+
+	public Spider(String web, Type type) {
+		tool = new Tool();
+		Init(web, type);
+	}
+
+	private void Init(String web, Type type) {
+		for (Map.Entry key : tool.ruleMap.entrySet()) {
+			String keyStr = key.getKey().toString();
+			if (web.contains(keyStr)) {
+				this.baseUrl = keyStr;
+				break;
+			}
+		}
+		this.webRule = tool.ruleMap.get(baseUrl);
+		this.charset = webRule.get("charset").getTextTrim();
+		this.web = web;
+		this.type = type;
+	}
+
 	/**
-	 * 解析html
-	 * 
-	 * @param html
-	 * @param url
-	 * @return 数据对象
-	 * @throws java.text.ParseException
+	 * @return 对象
 	 */
 	@Override
-	public Object analyzeHTMLByString(Type type, String url) {
-
-		String html = pickData(url, charset);
+	public Object analyzeHTMLByString() {
+		String html = "";
+		for (int i = 0; i < tool.MaxTryTime; i++) {
+			try {
+				html = pickData(web, charset);
+				if (!html.isEmpty()) {
+					break;
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException(web + "尝试了" + tool.MaxTryTime + "次还是失败了..");
+			}
+		}
 		//// 空直接返回
-		if (html.isEmpty() || null == html) {
+		if (html.isEmpty()) {
 			return null;
 		}
 		parseDoc = Jsoup.parse(html, baseUrl);
 		switch (type) {
-		case booklist:
-			Elements listElements = parseDoc.getElementsByClass("result-list");
-			if (null != listElements) {
-				Element firstBook = listElements.get(0);
-				Element result = firstBook.getElementsByClass("result-game-item-detail").get(0);
-				if (null != result) {
-					Book book = new Book();
-					book.setName(result.getElementsByTag("a").first().text());
-					book.setUrl(result.select("a").attr("href").toString());
+			case booklist:
+				return getAllBooks(html);
+			case chapterlist:
+				//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
 
-					result = result.getElementsByClass("result-game-item-info").get(0);
-					if (null != result) {
-						//// 笔趣阁没有作者url
-						book.setAuthor(result.getElementsByTag("span").get(1).text());
-						book.setNewChapter(result.getElementsByAttribute("href").text());
-						book.setNewChapterUrl(result.select("a").attr("href").toString());
-
-						//// 先放着
-						// book.setType();
-
-						// book.setLastUpdateTime(
-						// Tool.ConvertDate(result.getElementsByTag("span").get(5).text(),
-						// "yy-MM-dd"));
-						return book;
-					}
-					// System.out.println(book.toString());
-				}
-			}
-			break;
-		// 先只取第一个吧
-		// List<Book> list = new ArrayList<Book>();
-		// listElements.forEach(s ->
-		// s.getElementsByClass("result-game-item-detail").forEach(x -> {
-		// Book book = new Book();
-		// book.name = x.getElementsByTag("a").first().text();
-		// book.url = x.select("a").attr("href").toString();
-		// x.getElementsByClass("result-game-item-info").forEach(o -> {
-		// book.author = o.getElementsByTag("span").get(1).text();
-		// book.newChapter = o.getElementsByAttribute("href").text();
-		// book.newChapterUrl = o.select("a").attr("href").toString();
-		// book.lastUpdateTime = o.getElementsByTag("span").get(5).text();
-		// System.out.println(book.toString());
-		// list.add(book);
-		// });
-		// }));
-		case chapterlist:
-
-			//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
-
-			//// 这里将书的地址赋给下次需要处理的url中
-			bookUrl = url;
-			return getChapters();
-		case content:
-			Content content = getContent(html, url);
-			return content;
-		default:
-			break;
+				//// 这里将书的地址赋给下次需要处理的url中
+				bookUrl = web;
+				return getChapters();
+			case content:
+				return getContent(html, web);
+			case downloadUrl:
+			default:
+				return null;
 		}
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public AbstractSpider(String web) {
-		webRule = map.get(web);
-		this.web = web;
 	}
 
 	public List<Chapter> getChapters() {
@@ -186,8 +160,9 @@ public abstract class AbstractSpider implements INovelSpider {
 		Elements aTags = parseDoc.select(element.attributeValue("selector"));
 		// Elements chapters =
 		// parseDoc.getElementById("list").getElementsByTag("dd");
-		List<Chapter> chapterList = new ArrayList<Chapter>();
+		List<Chapter> chapterList = new ArrayList<>();
 		if (aTags == null || aTags.isEmpty()) {
+			return new ArrayList<>();
 		}
 		aTags.forEach(o -> {
 			Chapter chapter = new Chapter();
@@ -214,28 +189,28 @@ public abstract class AbstractSpider implements INovelSpider {
 
 			chapterList.add(chapter);
 		});
-		if (web.equals("BXWX")) {
-			Collections.sort(chapterList, new Comparator<Chapter>() { // 笔下文学爬取的章节需要重新排序
-				@Override
-				public int compare(Chapter o1, Chapter o2) {
-					try {
-						return Request.decryptBASE64(o1.getUrl()).compareTo(Request.decryptBASE64(o2.getUrl()));
-					} catch (IOException e) {
-						// FIXME Auto-generated catch block
-						e.printStackTrace();
-					}
-					return 0;
-				}
-			});
-		}
+//		if (web.equals("BXWX")) {
+//			Collections.sort(chapterList, new Comparator<Chapter>() { // 笔下文学爬取的章节需要重新排序
+//				@Override
+//				public int compare(Chapter o1, Chapter o2) {
+//					try {
+//						return Request.decryptBASE64(o1.getUrl()).compareTo(Request.decryptBASE64(o2.getUrl()));
+//					} catch (IOException e) {
+//						// FIXME Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					return 0;
+//				}
+//			});
+//		}
 		return chapterList;
 	}
 
 	/**
 	 * 获取内容对象
-	 * 
-	 * @param crawlString
-	 * @param web
+	 *
+	 * @param crawlString 获取字符串
+	 * @param url 链接
 	 * @return 内容对象
 	 */
 	@Override
@@ -258,8 +233,8 @@ public abstract class AbstractSpider implements INovelSpider {
 		httpget.setConfig(RequestConfig.custom().setConnectionRequestTimeout(10_000).setConnectTimeout(10_000)
 				.setSocketTimeout(10_000).build());
 		Request.setDefaultNovelSpiderHeader(httpget);
-		CloseableHttpResponse response = null;
-		CloseableHttpClient httpClient = null;
+		CloseableHttpResponse response;
+		CloseableHttpClient httpClient;
 		try {
 			httpClient = HttpClientBuilder.create().build();
 			response = httpClient.execute(httpget);
@@ -279,8 +254,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 获取章节名
-	 * 
-	 * @param selector
+	 *
 	 * @return 章节名
 	 */
 	@Override
@@ -300,10 +274,8 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 获取章节内容
-	 * 
-	 * @param selector
+	 *
 	 * @return 章节内容
-	 * @throws ParseException
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -343,8 +315,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 获取下一章Url
-	 * 
-	 * @param selector
+	 *
 	 * @return 下一章Url
 	 */
 	@Override
@@ -367,8 +338,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 获取上一章Url
-	 * 
-	 * @param selector
+	 *
 	 * @return 上一章Url
 	 */
 	@Override
@@ -385,96 +355,104 @@ public abstract class AbstractSpider implements INovelSpider {
 			} else {
 				return prevElement.attr("href");
 			}
-
 		}
 	}
 
 	/**
 	 * (BXWX、KSZ用) 根据url获取小说实体列表
-	 * 
-	 * @param url
+	 *
+	 * @param html
 	 * @return 返回小说实体列表
 	 */
-	public List<Book> getAllBooks(String url, Integer maxTryTime) {
-		return new ArrayList<Book>();
+	public List<Book> getAllBooks(String html) {
+		List<Book> books = new ArrayList<>();
+		// String msg = "";
+		try {
+			Elements trs = getTrs(html);
+			for (int i = 1, size = trs.size() - 1; i < size; i++) {
+				Element tr = trs.get(i);
+				Elements tds = tr.children();
+				Book book = new Book();
+				// msg = tds.toString();
+				//去除非中文
+				book.setType(tds.first().text().replaceAll("[^\u4e00-\u9fa5]", ""));
+				book.setName(tds.get(1).text());
+				book.setUrl(tds.get(1).getElementsByTag("a").first().absUrl("href"));
+				book.setNewChapter(tds.get(2).text());
+				book.setNewChapterUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
+				book.setAuthor(tds.get(3).text());
+				// book.setAuthorUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
+
+				book.setLastUpdateTime(ConvertDate(tds.get(4).text(), "MM-dd"));
+				// book.setStatus(Tool.FormatStatus(tds.get(5).text()));
+				book.setSource(webRule.get("source").getTextTrim());
+				books.add(book);
+				// Thread.sleep(1_000);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+			// FIXME: handle exception
+		}
+		return books;
 	};
 
 	/**
 	 * 获取书列表tr
-	 * 
-	 * @param url
-	 * @param charset
+	 *
+	 * @param html
 	 * @return
 	 */
-	public Elements getTrs(String url, String charset) {
-		return getTrs(url, charset, INovelSpider.MAX_TRY_TIME);
-	};
+	public Elements getTrs(String html) {
+//		maxTryTime = maxTryTime == null ? INovelSpider.MAX_TRY_TIME : maxTryTime;
+		Elements trs;
+//		for (int i = 0; i < maxTryTime; i++) {
+//			try {
+//				String html = pickData(url, charset);
+		String novelSelector = webRule.get("novel-selector").getTextTrim();
+		if (novelSelector == null) {
+			throw new RuntimeException(html + "获取tr标签出错");
+		}
+		Document document = Jsoup.parse(html, baseUrl);
+		trs = document.select(novelSelector);
+		String nextSelector = webRule.get("novel-nextpage-selector").getTextTrim();
+		Elements elements = document.select(nextSelector);
+		Element nextElement = elements == null ? null : elements.first();
+		//// 混混小说网没有下一页
+		if (baseUrl.contains("hunhun")) {
+			String[] page = nextElement.text().replaceAll("页", "").split("/");
+			if (!page[0].equals(page[1])) {
+				nextUrl = web.replaceAll("\\d+.html", (Integer.parseInt(page[0]) + 1) + ".html");
+			} else {
+				nextUrl = "";
+			}
+		} else {
 
-	/**
-	 * 获取书列表tr
-	 * 
-	 * @param url
-	 * @param charset
-	 * @param maxTryTime
-	 * @return
-	 */
-	public Elements getTrs(String url, String charset, Integer maxTryTime) {
-		maxTryTime = maxTryTime == null ? INovelSpider.MAX_TRY_TIME : maxTryTime;
-		Elements trs = null;
-		for (int i = 0; i < maxTryTime; i++) {
-			try {
-				String html = pickData(url, charset);
-				String novelSelector = webRule.get("novel-selector").getTextTrim();
-				if (novelSelector == null) {
-					throw new RuntimeException(url + "获取tr标签出错");
-				}
-				Document document = Jsoup.parse(html, baseUrl);
-				trs = document.select(novelSelector);
-				String nextSelector = webRule.get("novel-nextpage-selector").getTextTrim();
-				Elements elements = document.select(nextSelector);
-				nextElement = elements == null ? null : elements.first();
-				//// 混混小说网没有下一页
-				if (baseUrl.contains("hunhun")) {
-					String[] page = nextElement.text().replaceAll("页", "").split("/");
-					if (!page[0].equals(page[1])) {
-						nextUrl = url.replaceAll("\\d+.html", (Integer.parseInt(page[0]) + 1) + ".html");
-					} else {
-						nextUrl = "";
-					}
-				} else {
-
-					if (nextSelector != null) {
-
-						if (nextElement != null) {
-							nextUrl = nextElement.absUrl("href");
-						} else {
-							nextUrl = "";
-						}
-					}
-				}
-
-				return trs;
-			} catch (Exception e) {
-				// FIXME: handle exception
+			if (nextElement != null) {
+				nextUrl = nextElement.absUrl("href");
+			} else {
+				nextUrl = "";
 			}
 		}
-		throw new RuntimeException(url + "尝试了" + maxTryTime + "次还是失败了..");
+
+		return trs;
+//			} catch (Exception e) {
+//				// FIXME: handle exception
+//			}
+//		}
+//		throw new RuntimeException(url + "尝试了" + maxTryTime + "次还是失败了..");
 	}
 
-	@Override
 	public Boolean hasNext() {
 		// FIXME Auto-generated method stub
 		return !nextUrl.isEmpty();
 	}
 
-	@Override
 	public String next() {
 		// FIXME Auto-generated method stub
 		return nextUrl;
 	}
 
-	@Override
-	public Iterator<List<Book>> iterator(String key, String presentUrl, Integer maxTryTime) {
+	public Iterator<List<Book>> iterator(String key, String presentUrl) {
 		// FIXME Auto-generated method stub
 		presentKey = key;
 		nextUrl = presentUrl;
@@ -486,19 +464,16 @@ public abstract class AbstractSpider implements INovelSpider {
 	 */
 	private class NovelIterator implements Iterator<List<Book>> {
 
-		@Override
 		public boolean hasNext() {
-			return AbstractSpider.this.hasNext();
+			return Spider.this.hasNext();
 		}
 
-		@Override
 		public List<Book> next() {
-			List<Book> books = getAllBooks(nextUrl, 10);
-			return books;
+			web = nextUrl;
+			return (List<Book>) analyzeHTMLByString();
 		}
 	}
 
-	@Override
 	public String getLastUpdateTime(String bookUrl) {
 		String result = "";
 		String html = pickData(bookUrl, charset);
@@ -514,7 +489,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 根据bookurl获取下载链接
-	 * 
+	 *
 	 * @param bookurl
 	 * @return 返回txt下载链接
 	 */
@@ -524,7 +499,7 @@ public abstract class AbstractSpider implements INovelSpider {
 
 	/**
 	 * 字符串转Date
-	 * 
+	 *
 	 * @param time
 	 * @param format
 	 * @return Date

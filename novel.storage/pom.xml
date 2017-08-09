@@ -37,5 +37,14 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
 	</build>
 </project>

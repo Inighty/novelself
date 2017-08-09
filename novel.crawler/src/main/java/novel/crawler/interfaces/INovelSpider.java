@@ -31,22 +31,19 @@ public interface INovelSpider {
 	/**
 	 * 解析html
 	 * 
-	 * @param type
-	 * @param url
 	 * @return 数据对象
 	 * @throws ParseException
 	 */
-	public Object analyzeHTMLByString(Type type, String url);
-
-	/**
-	 * 获取搜索书的url
-	 */
-	public String getSearchBookUrl();
+	public Object analyzeHTMLByString();
+//
+//	/**
+//	 * 获取搜索书的url
+//	 */
+//	public String getSearchBookUrl();
 
 	/**
 	 * 获取下一章Url
 	 * 
-	 * @param selector
 	 * @return 下一章Url
 	 */
 	public String getNextUrl();
@@ -54,7 +51,6 @@ public interface INovelSpider {
 	/**
 	 * 获取上一章Url
 	 * 
-	 * @param selector
 	 * @return 上一章Url
 	 */
 	public String getPreUrl();
@@ -62,25 +58,22 @@ public interface INovelSpider {
 	/**
 	 * 获取章节内容
 	 * 
-	 * @param selector
 	 * @return 章节内容
-	 * @throws ParseException
 	 */
 	public String getChapterContent(String crawlString);
 
 	/**
 	 * 获取章节名
 	 * 
-	 * @param selector
 	 * @return 章节名
 	 */
 	public String getChapterName();
 
 	/**
 	 * 获取内容对象
-	 * 
-	 * @param crawlString
-	 * @param 书的主地址
+	 *
+	 * @param crawlString 获取字符串
+	 * @param bookUrl 书的主地址
 	 * @return 内容对象
 	 */
 	public Content getContent(String crawlString, String bookUrl);
@@ -93,7 +86,7 @@ public interface INovelSpider {
 	 * @param url
 	 * @return 返回小说实体列表
 	 */
-	public List<Book> getAllBooks(String url, Integer maxTryTime);
+	public List<Book> getAllBooks(String url);
 
 	/**
 	 * 判断是否还有下一页
@@ -102,9 +95,9 @@ public interface INovelSpider {
 	 */
 	public Boolean hasNext();
 
-	public String next();
+//	public String next();
 
-	public Iterator<List<Book>> iterator(String key,String presentUrl, Integer maxTryTime);
+	public Iterator<List<Book>> iterator(String key, String presentUrl);
 
 	/**
 	 * 专门去拿精确的时间

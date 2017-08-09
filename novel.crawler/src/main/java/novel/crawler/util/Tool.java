@@ -17,6 +17,8 @@ public class Tool {
 
 	public final Map<String, Map<String, Element>> ruleMap = new HashMap<>();
 
+	public int MaxTryTime;
+
 	/**
 	 * 构造函数
 	 */
@@ -34,48 +36,49 @@ public class Tool {
 			// "utf8");
 			Document document = DocumentHelper.parseText(result);
 			Element root = document.getRootElement();
+			MaxTryTime = Integer.parseInt(root.element("MaxTryTime").getTextTrim());
 			List<Element> site = root.elements("Site");
-			Map<String, Element> temp = null;
+			Map<String, Element> temp;
 			for (Element novelSite : site) {
 				List<Element> childElements = novelSite.elements();
 				temp = new HashMap<>();
 				for (Element ele : childElements) {
 					temp.put(ele.getName(), ele);
 				}
-				ruleMap.put(novelSite.elementTextTrim("name"), temp);
+				ruleMap.put(novelSite.elementTextTrim("domain"), temp);
 			}
 		} catch (IOException | DocumentException e) {
-			// FIXME 自动生成的 catch 块
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * 替换特殊字符串
-	 * 
-	 * @return
-	 * @throws ParseRuleException
+	 *
+	 * @return string
 	 */
 	public static String replaceSpecifyString(String content, String specifyString) throws ParseException {
-		if (specifyString != null && specifyString.startsWith("#{")) {
-			switch (specifyString) {
-			case "#{space}":
-				return content.replaceAll("#\\{space\\}", "&nbsp;");
-			case "#{line-break}":
-				return content.replaceAll("#\\{line-break\\}", "\n");
-			default:
-				throw new ParseException(content + "不是合法的表达式！", 0);
+		if (specifyString != null) {
+			if (specifyString.startsWith("#{")) {
+				switch (specifyString) {
+					case "#{space}":
+						return content.replaceAll("#\\{space}", "&nbsp;");
+					case "#{line-break}":
+						return content.replaceAll("#\\{line-break}", "\n");
+					default:
+						throw new ParseException(content + "不是合法的表达式！", 0);
+				}
+			} else {
+				return content.replaceAll(specifyString, "");
 			}
-		} else {
-			return content.replaceAll(specifyString, "");
 		}
+		return "";
 	}
 
+
 	/**
-	 * 统一小说状态 连载 完结
-	 * 
-	 * @param Status
-	 * @return
+	 * @param status 状态
+	 * @return int result
 	 */
 	public static int FormatStatus(String status) {
 		int statusInt = 1;
@@ -93,7 +96,7 @@ public class Tool {
 	 * 
 	 * @param url
 	 *            当前章节的完整url地址:http://www.biquge.tw//0_5/1373.html
-	 * @param relativeUrl
+	 * @param absUrl
 	 *            1374.html
 	 * @return /0_5/1374.html
 	 */

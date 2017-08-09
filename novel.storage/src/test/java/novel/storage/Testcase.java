@@ -3,12 +3,10 @@ package novel.storage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import novel.storage.Impl.NovelStorageImpl;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
-
-import novel.storage.Impl.BXWXNovelStorageImpl;
-import novel.storage.Impl.KSZNovelStorageImpl;
 
 public class Testcase {
 	@Test
@@ -20,13 +18,13 @@ public class Testcase {
 	
 	@Test
 	public void testProcessor() throws Exception{
-		Processor processor = new KSZNovelStorageImpl();
+		Processor processor = new NovelStorageImpl();
 		processor.process();
 	}
 	
 	@Test
 	public void testProcessorBXWX() throws Exception{
-		Processor processor = new BXWXNovelStorageImpl();
+		Processor processor = new NovelStorageImpl();
 		processor.process();
 	}
 }

@@ -1,5 +1,5 @@
 package novel.crawler.enums;
 
 public enum Type {
-	booklist,chapterlist,content
+	booklist, chapterlist, content, downloadUrl
 }

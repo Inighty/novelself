@@ -118,9 +118,8 @@ public interface INovelSpider {
 
 	/**
 	 * 根据bookurl获取下载链接
-	 * 
-	 * @param bookurl
+	 *
 	 * @return 返回txt下载链接
 	 */
-	public String getDownloadTxtUrl(String bookurl);
+	public String getDownloadTxtUrl();
 }

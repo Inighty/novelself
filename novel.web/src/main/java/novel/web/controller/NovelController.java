@@ -67,7 +67,8 @@ public class NovelController {
 		// System.out.println(keyword);
 		// return
 		// SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl);
-		return JsonResponse.success(new Spider(bookUrl, Type.downloadUrl).getDownloadTxtUrl(bookUrl));
+
+		return JsonResponse.success(new Spider(bookUrl, Type.downloadUrl).getDownloadTxtUrl());
 	}
 //
 //	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)

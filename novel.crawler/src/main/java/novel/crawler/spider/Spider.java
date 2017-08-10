@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
@@ -40,7 +39,7 @@ import novel.crawler.util.Tool;
 public class Spider implements INovelSpider {
 
 	private Tool tool;
-	Map<String, org.dom4j.Element> webRule;
+	private Map<String, org.dom4j.Element> webRule;
 	protected String web;
 	private String charset;
 	protected Type type;
@@ -144,9 +143,6 @@ public class Spider implements INovelSpider {
 				case booklist:
 					return getAllBooks(html);
 				case chapterlist:
-					//// 这里可以把书前面没有的属性获取到并赋值 类型 更新时间
-
-					//// 这里将书的地址赋给下次需要处理的url中
 					bookUrl = web;
 					return getChapters();
 				case content:
@@ -518,16 +514,22 @@ public class Spider implements INovelSpider {
 		return result;
 	}
 
-	;
-
 	/**
 	 * 根据bookurl获取下载链接
 	 *
-	 * @param bookurl
 	 * @return 返回txt下载链接
 	 */
-	public String getDownloadTxtUrl(String bookurl) {
-		return null;
+	public String getDownloadTxtUrl() {
+		String replaceStr = webRule.get("download-url-replace").getTextTrim();
+		String tempUrl = replaceStr.split(" ")[0].equals("+") ? web.concat(replaceStr.split(" ")[1]) : web.replace(replaceStr.split(" ")[0], replaceStr.split(" ")[1]);
+		String html = pickData(tempUrl, charset);
+		org.dom4j.Element element = webRule.get("download-url-element");
+		String selector = element.attributeValue("selector");
+		int index = Integer.parseInt(element.attributeValue("index"));
+		parseDoc = Jsoup.parse(html, baseUrl);
+		Element elementForDl = parseDoc.select(selector).get(index);
+		String url = elementForDl.attr("href");
+		return url.startsWith("http") ? url : baseUrl + url;
 	}
 
 	/**

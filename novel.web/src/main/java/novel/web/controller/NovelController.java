@@ -67,8 +67,13 @@ public class NovelController {
 		// System.out.println(keyword);
 		// return
 		// SpiderFactory.SpiderGenerate(bookUrl).getDownloadTxtUrl(bookUrl);
-
-		return JsonResponse.success(new Spider(bookUrl, Type.downloadUrl).getDownloadTxtUrl());
+		String txtUrl = "";
+		try {
+			txtUrl = new Spider(bookUrl, Type.downloadUrl).getDownloadTxtUrl();
+		} catch (Exception ex) {
+			return JsonResponse.error("抱歉，该小说无法下载。");
+		}
+		return JsonResponse.success(txtUrl);
 	}
 //
 //	@RequestMapping(value = "/search2.do", method = RequestMethod.POST)

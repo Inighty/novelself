@@ -18,7 +18,7 @@ public class Tool {
 	public final Map<String, Map<String, Element>> ruleMap = new HashMap<>();
 
 	public int MaxTryTime;
-
+	public String Valid;
 	/**
 	 * 构造函数
 	 */
@@ -37,6 +37,7 @@ public class Tool {
 			Document document = DocumentHelper.parseText(result);
 			Element root = document.getRootElement();
 			MaxTryTime = Integer.parseInt(root.element("MaxTryTime").getTextTrim());
+			Valid = root.element("Valid").getTextTrim();
 			List<Element> site = root.elements("Site");
 			Map<String, Element> temp;
 			for (Element novelSite : site) {
@@ -82,7 +83,7 @@ public class Tool {
 	 */
 	public static int FormatStatus(String status) {
 		int statusInt = 1;
-		if (status.contains("连载")) {
+		if (status == null || status.contains("连载")) {
 			statusInt = 1;
 		} else if (status.contains("完结") || status.contains("完成")) {
 			statusInt = 2;
@@ -93,11 +94,9 @@ public class Tool {
 	/**
 	 * 将页面中解析到的前一章，下一章的章节地址解析为绝对路径 <br>
 	 * 如果absUrl本身就是绝对路径，则原样返回。
-	 * 
-	 * @param url
-	 *            当前章节的完整url地址:http://www.biquge.tw//0_5/1373.html
-	 * @param absUrl
-	 *            1374.html
+	 *
+	 * @param url    当前章节的完整url地址:http://www.biquge.tw//0_5/1373.html
+	 * @param absUrl 1374.html
 	 * @return /0_5/1374.html
 	 */
 	public static String relativeUrl2FullUrl(String url, String absUrl) {

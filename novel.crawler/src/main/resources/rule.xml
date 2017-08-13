@@ -2,6 +2,170 @@
 <!DOCTYPE xml>
 <xml>
     <MaxTryTime>10</MaxTryTime>
+
+    <!--控制抓取网站有效性，只针对后台抓取-->
+    <Valid>
+        http://www.x23us.com,
+        http://www.hunhun520.com,
+        http://www.kanshuzhong.com
+    </Valid>
+
+    <Site>
+        <domain>http://www.x23us.com</domain>
+        <source>顶点小说</source>
+        <charset>gbk</charset>
+        <chapter-list-element selector="#at td a" reverse="false"/>
+        <!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
+        <content-this-element selector="#contents" index="0">
+            <!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
+            <parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
+            <parse to="#{line-break}"><![CDATA[<br />]]></parse>
+            <parse to=""><![CDATA[顶点小说 Ｘ２３ＵＳ．ＣＯＭ更新最快]]></parse>
+        </content-this-element>
+        <content-this-title-element selector="#amain h1"
+                                    index="0"/>
+        <content-this-prev-element selector="#amain h3 a"
+                                   index="0"/>
+        <content-this-next-element selector="#amain h3 a"
+                                   index="2"/>
+        <novel-selector>#content tr</novel-selector>
+        <novel-nextpage-selector selector=".next" index="0"/>
+        <bookIndex name="0 1" newChapter="1" author="2" updateTime="4" status="5"/>
+        <update-time-format>yy-MM-dd</update-time-format>
+        <!--<novel-td-selector>td</novel-td-selector>-->
+        <novel-book-list>
+            玄幻魔法,http://www.x23us.com/class/1_1.html;
+            武侠修真,http://www.x23us.com/class/2_1.html;
+            都市言情,http://www.x23us.com/class/3_1.html;
+            历史军事,http://www.x23us.com/class/4_1.html;
+            侦探推理,http://www.x23us.com/class/5_1.html;
+            网游动漫,http://www.x23us.com/class/6_1.html;
+            科幻小说,http://www.x23us.com/class/7_1.html;
+            恐怖灵异,http://www.x23us.com/class/8_1.html;
+            散文诗词,http://www.x23us.com/class/9_1.html;
+            其他类型,http://www.x23us.com/class/10_1.html;
+        </novel-book-list>
+        <!--<download-url-replace>+ txt.html</download-url-replace>-->
+        <!--<download-url-element selector="#TxtdownTop a" index="1"/>-->
+    </Site>
+
+    <Site>
+        <domain>http://www.hunhun520.com</domain>
+        <source>混混小说</source>
+        <charset>gbk</charset>
+        <chapter-list-element selector="#list dd a"/>
+        <!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
+        <content-this-element selector="#content" index="0">
+            <!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
+            <parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
+            <parse to="#{line-break}"><![CDATA[<br />]]></parse>
+            <parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
+        </content-this-element>
+        <content-this-title-element selector="div.bookname h1"
+                                    index="0"/>
+        <content-this-prev-element selector="div.bottem2 a"
+                                   index="0"/>
+        <content-this-next-element selector="div.bottem2 a"
+                                   index="2"/>
+
+        <!--小说章节被分节才会用-->
+        <content-split-element>div.text a</content-split-element>
+        <content-need-remove>div.mb_29b div.text</content-need-remove>
+        <!--小说章节被分节才会用-->
+
+        <novel-selector>.novelslist li</novel-selector>
+        <novel-nextpage-selector selector=".page span" index="0"/>
+        <bookIndex type="0" name="1 0" newChapter="2 0" author="3" updateTime="4"/>
+        <update-time-format>MM-dd</update-time-format>
+        <novel-book-list>
+            A,http://www.hunhun520.com/shuku/0_0_a_0_0_0_0_0_1.html;
+            B,http://www.hunhun520.com/shuku/0_0_b_0_0_0_0_0_1.html;
+            C,http://www.hunhun520.com/shuku/0_0_c_0_0_0_0_0_1.html;
+            D,http://www.hunhun520.com/shuku/0_0_d_0_0_0_0_0_1.html;
+            E,http://www.hunhun520.com/shuku/0_0_e_0_0_0_0_0_1.html;
+            F,http://www.hunhun520.com/shuku/0_0_f_0_0_0_0_0_1.html;
+            G,http://www.hunhun520.com/shuku/0_0_g_0_0_0_0_0_1.html;
+            H,http://www.hunhun520.com/shuku/0_0_h_0_0_0_0_0_1.html;
+            I,http://www.hunhun520.com/shuku/0_0_i_0_0_0_0_0_1.html;
+            J,http://www.hunhun520.com/shuku/0_0_j_0_0_0_0_0_1.html;
+            K,http://www.hunhun520.com/shuku/0_0_k_0_0_0_0_0_1.html;
+            L,http://www.hunhun520.com/shuku/0_0_l_0_0_0_0_0_1.html;
+            M,http://www.hunhun520.com/shuku/0_0_m_0_0_0_0_0_1.html;
+            N,http://www.hunhun520.com/shuku/0_0_n_0_0_0_0_0_1.html;
+            O,http://www.hunhun520.com/shuku/0_0_o_0_0_0_0_0_1.html;
+            P,http://www.hunhun520.com/shuku/0_0_p_0_0_0_0_0_1.html;
+            R,http://www.hunhun520.com/shuku/0_0_r_0_0_0_0_0_1.html;
+            S,http://www.hunhun520.com/shuku/0_0_s_0_0_0_0_0_1.html;
+            T,http://www.hunhun520.com/shuku/0_0_t_0_0_0_0_0_1.html;
+            Q,http://www.hunhun520.com/shuku/0_0_q_0_0_0_0_0_1.html;
+            U,http://www.hunhun520.com/shuku/0_0_u_0_0_0_0_0_1.html;
+            V,http://www.hunhun520.com/shuku/0_0_v_0_0_0_0_0_1.html;
+            W,http://www.hunhun520.com/shuku/0_0_w_0_0_0_0_0_1.html;
+            X,http://www.hunhun520.com/shuku/0_0_x_0_0_0_0_0_1.html;
+            Y,http://www.hunhun520.com/shuku/0_0_y_0_0_0_0_0_1.html;
+            Z,http://www.hunhun520.com/shuku/0_0_z_0_0_0_0_0_1.html;
+            0,http://www.hunhun520.com/shuku/0_0_1_0_0_0_0_0_1.html;
+            #,http://www.hunhun520.com/shuku/0_0_2_0_0_0_0_0_1.html;
+        </novel-book-list>
+        <download-url-replace>+ txt.html</download-url-replace>
+        <download-url-element selector="#TxtdownTop a" index="1"/>
+    </Site>
+
+    <Site>
+        <domain>http://www.kanshuzhong.com</domain>
+        <source>看书中</source>
+        <charset>gbk</charset>
+        <chapter-list-element selector=".bookcontent dd a"/>
+        <!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
+        <content-this-element selector=".textcontent"
+                              index="0">
+            <!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
+            <parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
+            <parse to="#{line-break}"><![CDATA[<br />]]></parse>
+            <parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
+        </content-this-element>
+        <content-this-title-element selector="div.rcontent h2"
+                                    index="0"/>
+        <content-this-prev-element selector=".readlink a"
+                                   index="1"/>
+        <content-this-next-element selector=".readlink a"
+                                   index="3"/>
+        <novel-selector>.book_list tr</novel-selector>
+        <novel-nextpage-selector selector="#pagelink .next" index="0"/>
+        <bookIndex type="0 0" name="1 0" newChapter="2 0" author="3 0" updateTime="4" status="5"/>
+        <update-time-format>MM-dd</update-time-format>
+        <novel-book-list>
+            A,http://www.kanshuzhong.com/map/A/1/;
+            B,http://www.kanshuzhong.com/map/B/1/;
+            C,http://www.kanshuzhong.com/map/C/1/;
+            D,http://www.kanshuzhong.com/map/D/1/;
+            E,http://www.kanshuzhong.com/map/E/1/;
+            F,http://www.kanshuzhong.com/map/F/1/;
+            G,http://www.kanshuzhong.com/map/G/1/;
+            H,http://www.kanshuzhong.com/map/H/1/;
+            I,http://www.kanshuzhong.com/map/I/1/;
+            J,http://www.kanshuzhong.com/map/J/1/;
+            K,http://www.kanshuzhong.com/map/K/1/;
+            L,http://www.kanshuzhong.com/map/L/1/;
+            M,http://www.kanshuzhong.com/map/M/1/;
+            N,http://www.kanshuzhong.com/map/N/1/;
+            O,http://www.kanshuzhong.com/map/O/1/;
+            P,http://www.kanshuzhong.com/map/P/1/;
+            Q,http://www.kanshuzhong.com/map/Q/1/;
+            R,http://www.kanshuzhong.com/map/R/1/;
+            S,http://www.kanshuzhong.com/map/S/1/;
+            T,http://www.kanshuzhong.com/map/T/1/;
+            U,http://www.kanshuzhong.com/map/U/1/;
+            V,http://www.kanshuzhong.com/map/V/1/;
+            W,http://www.kanshuzhong.com/map/W/1/;
+            X,http://www.kanshuzhong.com/map/X/1/;
+            Y,http://www.kanshuzhong.com/map/Y/1/;
+            Z,http://www.kanshuzhong.com/map/Z/1/;
+        </novel-book-list>
+        <download-url-replace>book txtxiazai</download-url-replace>
+        <download-url-element selector=".bookinfos .book_read a" index="2"/>
+    </Site>
+
     <!--&lt;!&ndash; 笔趣阁 先放弃.. &ndash;&gt;-->
     <!--<Site>-->
     <!--<domain>www.biquge.tw</domain>-->
@@ -21,59 +185,8 @@
     <!--<content-this-next-element selector="#pager_next"-->
     <!--index="0" />-->
     <!--</Site>-->
-    <!--<Site>-->
-    <!--<domain>http://www.kanshuzhong.com</domain>-->
-    <!--<source>看书中</source>-->
-    <!--<charset>gbk</charset>-->
-    <!--<chapter-list-element selector=".bookcontent dd a"/>-->
-    <!--&lt;!&ndash; selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 &ndash;&gt;-->
-    <!--<content-this-element selector=".textcontent"-->
-    <!--index="0">-->
-    <!--&lt;!&ndash; 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 &ndash;&gt;-->
-    <!--<parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>-->
-    <!--<parse to="#{line-break}"><![CDATA[<br />]]></parse>-->
-    <!--<parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>-->
-    <!--</content-this-element>-->
-    <!--<content-this-title-element selector="div.rcontent h2"-->
-    <!--index="0"/>-->
-    <!--<content-this-prev-element selector=".readlink a"-->
-    <!--index="1"/>-->
-    <!--<content-this-next-element selector=".readlink a"-->
-    <!--index="3"/>-->
-    <!--<novel-selector>.book_list tr</novel-selector>-->
-    <!--<novel-nextpage-selector>#pagelink .next</novel-nextpage-selector>-->
-    <!--<novel-td-selector>td</novel-td-selector>-->
-    <!--<novel-book-list>-->
-    <!--A,http://www.kanshuzhong.com/map/A/1/;-->
-    <!--B,http://www.kanshuzhong.com/map/B/1/;-->
-    <!--C,http://www.kanshuzhong.com/map/C/1/;-->
-    <!--D,http://www.kanshuzhong.com/map/D/1/;-->
-    <!--E,http://www.kanshuzhong.com/map/E/1/;-->
-    <!--F,http://www.kanshuzhong.com/map/F/1/;-->
-    <!--G,http://www.kanshuzhong.com/map/G/1/;-->
-    <!--H,http://www.kanshuzhong.com/map/H/1/;-->
-    <!--I,http://www.kanshuzhong.com/map/I/1/;-->
-    <!--J,http://www.kanshuzhong.com/map/J/1/;-->
-    <!--K,http://www.kanshuzhong.com/map/K/1/;-->
-    <!--L,http://www.kanshuzhong.com/map/L/1/;-->
-    <!--M,http://www.kanshuzhong.com/map/M/1/;-->
-    <!--N,http://www.kanshuzhong.com/map/N/1/;-->
-    <!--O,http://www.kanshuzhong.com/map/O/1/;-->
-    <!--P,http://www.kanshuzhong.com/map/P/1/;-->
-    <!--Q,http://www.kanshuzhong.com/map/Q/1/;-->
-    <!--R,http://www.kanshuzhong.com/map/R/1/;-->
-    <!--S,http://www.kanshuzhong.com/map/S/1/;-->
-    <!--T,http://www.kanshuzhong.com/map/T/1/;-->
-    <!--U,http://www.kanshuzhong.com/map/U/1/;-->
-    <!--V,http://www.kanshuzhong.com/map/V/1/;-->
-    <!--W,http://www.kanshuzhong.com/map/W/1/;-->
-    <!--X,http://www.kanshuzhong.com/map/X/1/;-->
-    <!--Y,http://www.kanshuzhong.com/map/Y/1/;-->
-    <!--Z,http://www.kanshuzhong.com/map/Z/1/;-->
-    <!--</novel-book-list>-->
-    <!--<download-url-replace>book txtxiazai</download-url-replace>-->
-    <!--<download-url-element selector=".bookinfos .book_read a" index="2"/>-->
-    <!--</Site>-->
+
+
     <!--<Site>-->
     <!--<domain>www.bxwx8.org</domain>-->
     <!--<source>笔下文学</source>-->
@@ -116,62 +229,7 @@
     <!--<novel-nextpage-selector>#pagelink .next</novel-nextpage-selector>-->
     <!--<novel-td-selector>span</novel-td-selector>-->
     <!--</Site>-->
-    <Site>
-        <domain>http://www.hunhun520.com</domain>
-        <source>混混小说</source>
-        <charset>gbk</charset>
-        <chapter-list-element selector="#list dd a"/>
-        <!-- selector:jQuery选择器 index:通过选择器选中下标为几的元素，如果没有则默认为0 -->
-        <content-this-element selector="#content" index="0">
-            <!-- 需要过滤的文字。to 将 匹配内容过滤为什么内容 #{space}:两个空格 #{line-break}:换行符 不以#开头的文本:替换为普通内容 -->
-            <parse to="#{space}"><![CDATA[&nbsp;&nbsp;]]></parse>
-            <parse to="#{line-break}"><![CDATA[<br />]]></parse>
-            <parse to=""><![CDATA[最快更新，无弹窗阅读请。]]></parse>
-        </content-this-element>
-        <content-this-title-element selector="div.bookname h1"
-                                    index="0"/>
-        <content-this-prev-element selector="div.bottem2 a"
-                                   index="0"/>
-        <content-this-next-element selector="div.bottem2 a"
-                                   index="2"/>
-        <content-split-element>div.text a</content-split-element>
-        <content-need-remove>div.mb_29b div.text</content-need-remove>
-        <novel-selector>.novelslist li</novel-selector>
-        <novel-nextpage-selector>.page span</novel-nextpage-selector>
-        <novel-td-selector>td</novel-td-selector>
-        <novel-book-list>
-            A,http://www.hunhun520.com/shuku/0_0_a_0_0_0_0_0_1.html;
-            B,http://www.hunhun520.com/shuku/0_0_b_0_0_0_0_0_1.html;
-            C,http://www.hunhun520.com/shuku/0_0_c_0_0_0_0_0_1.html;
-            D,http://www.hunhun520.com/shuku/0_0_d_0_0_0_0_0_1.html;
-            E,http://www.hunhun520.com/shuku/0_0_e_0_0_0_0_0_1.html;
-            F,http://www.hunhun520.com/shuku/0_0_f_0_0_0_0_0_1.html;
-            G,http://www.hunhun520.com/shuku/0_0_g_0_0_0_0_0_1.html;
-            H,http://www.hunhun520.com/shuku/0_0_h_0_0_0_0_0_1.html;
-            I,http://www.hunhun520.com/shuku/0_0_i_0_0_0_0_0_1.html;
-            J,http://www.hunhun520.com/shuku/0_0_j_0_0_0_0_0_1.html;
-            K,http://www.hunhun520.com/shuku/0_0_k_0_0_0_0_0_1.html;
-            L,http://www.hunhun520.com/shuku/0_0_l_0_0_0_0_0_1.html;
-            M,http://www.hunhun520.com/shuku/0_0_m_0_0_0_0_0_1.html;
-            N,http://www.hunhun520.com/shuku/0_0_n_0_0_0_0_0_1.html;
-            O,http://www.hunhun520.com/shuku/0_0_o_0_0_0_0_0_1.html;
-            P,http://www.hunhun520.com/shuku/0_0_p_0_0_0_0_0_1.html;
-            R,http://www.hunhun520.com/shuku/0_0_r_0_0_0_0_0_1.html;
-            S,http://www.hunhun520.com/shuku/0_0_s_0_0_0_0_0_1.html;
-            T,http://www.hunhun520.com/shuku/0_0_t_0_0_0_0_0_1.html;
-            Q,http://www.hunhun520.com/shuku/0_0_q_0_0_0_0_0_1.html;
-            U,http://www.hunhun520.com/shuku/0_0_u_0_0_0_0_0_1.html;
-            V,http://www.hunhun520.com/shuku/0_0_v_0_0_0_0_0_1.html;
-            W,http://www.hunhun520.com/shuku/0_0_w_0_0_0_0_0_1.html;
-            X,http://www.hunhun520.com/shuku/0_0_x_0_0_0_0_0_1.html;
-            Y,http://www.hunhun520.com/shuku/0_0_y_0_0_0_0_0_1.html;
-            Z,http://www.hunhun520.com/shuku/0_0_z_0_0_0_0_0_1.html;
-            0,http://www.hunhun520.com/shuku/0_0_1_0_0_0_0_0_1.html;
-            #,http://www.hunhun520.com/shuku/0_0_2_0_0_0_0_0_1.html;
-        </novel-book-list>
-        <download-url-replace>+ txt.html</download-url-replace>
-        <download-url-element selector="#TxtdownTop a" index="1"/>
-    </Site>
+
     <!--<Site>-->
     <!--<domain>www.51xsw.com</domain>-->
     <!--<source>龙腾小说</source>-->

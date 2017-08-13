@@ -41,6 +41,9 @@ public class NovelStorageImpl implements Processor {
 
 		for (Entry<String, Map<String, Element>> entry : tool.ruleMap.entrySet()) {
 			String site = entry.getKey();
+			if (!tool.Valid.contains(site)) {
+				continue;
+			}
 			String taskStr = entry.getValue().get("novel-book-list").getTextTrim();
 			for (String classify : taskStr.split(";")) {
 				String[] item = classify.split(",");

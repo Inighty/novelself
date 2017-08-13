@@ -1,13 +1,7 @@
 package novel.crawler.spider;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +36,7 @@ public class Spider implements INovelSpider {
 	private Map<String, org.dom4j.Element> webRule;
 	protected String web;
 	private String charset;
+	private String bookType;
 	protected Type type;
 	private static final String CHAPTER_MATCH_RULE = ".*/*\\d+\\.[html]{3,4}";
 	//// 当前列表key （如首字母A B C..即Task的key）
@@ -130,7 +125,7 @@ public class Spider implements INovelSpider {
 					break;
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException(web + "尝试了" + tool.MaxTryTime + "次还是失败了..");
+//				ex.printStackTrace(web + "尝试了" + tool.MaxTryTime + "次还是失败了..");
 			}
 		}
 		//// 空直接返回
@@ -190,7 +185,12 @@ public class Spider implements INovelSpider {
 			// System.out.println(chapter.toString());
 
 			chapterList.add(chapter);
+
 		});
+		////需要倒序
+		if (element.attributeValue("reverse").equals("true")) {
+			Collections.reverse(chapterList);
+		}
 //		if (web.equals("BXWX")) {
 //			Collections.sort(chapterList, new Comparator<Chapter>() { // 笔下文学爬取的章节需要重新排序
 //				@Override
@@ -391,6 +391,13 @@ public class Spider implements INovelSpider {
 	 */
 	public List<Book> getAllBooks(String html) {
 		List<Book> books = new ArrayList<>();
+
+		String bookTypeIndex = webRule.get("bookIndex").attributeValue("type");
+		String bookNameIndex = webRule.get("bookIndex").attributeValue("name");
+		String bookNewChapterIndex = webRule.get("bookIndex").attributeValue("newChapter");
+		String bookAuthorIndex = webRule.get("bookIndex").attributeValue("author");
+		String bookLastUpdateIndex = webRule.get("bookIndex").attributeValue("updateTime");
+		String bookStatusIndex = webRule.get("bookIndex").attributeValue("status");
 		// String msg = "";
 		try {
 			Elements trs = getTrs(html);
@@ -400,28 +407,40 @@ public class Spider implements INovelSpider {
 				Book book = new Book();
 				// msg = tds.toString();
 				//去除非中文
-				book.setType(tds.first().text().replaceAll("[^\u4e00-\u9fa5]", ""));
-				book.setName(tds.get(1).text());
-				book.setUrl(tds.get(1).getElementsByTag("a").first().absUrl("href"));
-				book.setNewChapter(tds.get(2).text());
-				book.setNewChapterUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
-				book.setAuthor(tds.get(3).text());
+				book.setType(bookTypeIndex == null ? bookType : SplitSove(tds, bookTypeIndex).text().replaceAll("[^\u4e00-\u9fa5]", ""));
+				book.setName(SplitSove(tds, bookNameIndex).text());
+				book.setUrl(SplitSove(tds, bookNameIndex).getElementsByTag("a").first().absUrl("href"));
+				book.setNewChapter(SplitSove(tds, bookNewChapterIndex).text());
+				Elements newChapterElement = SplitSove(tds, bookNewChapterIndex).getElementsByTag("a");
+				book.setNewChapterUrl(newChapterElement == null ? null : newChapterElement.first().absUrl("href"));
+				book.setAuthor(SplitSove(tds, bookAuthorIndex).text());
 				// book.setAuthorUrl(tds.get(2).getElementsByTag("a").first().absUrl("href"));
 
-				book.setLastUpdateTime(ConvertDate(tds.get(4).text(), "MM-dd"));
-				// book.setStatus(Tool.FormatStatus(tds.get(5).text()));
+				book.setLastUpdateTime(ConvertDate(SplitSove(tds, bookLastUpdateIndex).text(), webRule.get("update-time-format").getTextTrim()));
+				if (bookStatusIndex != null) {
+					Element statusElement = SplitSove(tds, bookStatusIndex);
+					book.setStatus(Tool.FormatStatus(statusElement == null ? null : statusElement.text()));
+				}
 				book.setSource(webRule.get("source").getTextTrim());
 				books.add(book);
 				// Thread.sleep(1_000);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 			// FIXME: handle exception
 		}
 		return books;
 	}
 
-	;
+	private Element SplitSove(Elements tds, String index) {
+		String[] splitStr = index.split(" ");
+		Element temp = null;
+		for (String item : splitStr) {
+			temp = temp == null ? tds.get(Integer.parseInt(item)) : temp.children().get(Integer.parseInt(item));
+		}
+		return temp;
+	}
 
 	/**
 	 * 获取书列表tr
@@ -441,9 +460,10 @@ public class Spider implements INovelSpider {
 		}
 		Document document = Jsoup.parse(html, baseUrl);
 		trs = document.select(novelSelector);
-		String nextSelector = webRule.get("novel-nextpage-selector").getTextTrim();
+		org.dom4j.Element element = webRule.get("novel-nextpage-selector");
+		String nextSelector = element.attributeValue("selector");
 		Elements elements = document.select(nextSelector);
-		Element nextElement = elements == null ? null : elements.first();
+		Element nextElement = elements.size() == 0 ? null : elements.get(Integer.parseInt(element.attributeValue("index")));
 		//// 混混小说网没有下一页
 		if (baseUrl.contains("hunhun")) {
 			String[] page = nextElement.text().replaceAll("页", "").split("/");
@@ -482,6 +502,7 @@ public class Spider implements INovelSpider {
 	public Iterator<List<Book>> iterator(String key, String presentUrl) {
 		// FIXME Auto-generated method stub
 		presentKey = key;
+		bookType = key.replaceAll("[^\u4e00-\u9fa5]", "");
 		nextUrl = presentUrl;
 		return new NovelIterator();
 	}

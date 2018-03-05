@@ -188,7 +188,8 @@ public class Spider implements INovelSpider {
 
 		});
 		////需要倒序
-		if (element.attributeValue("reverse").equals("true")) {
+		String eleReverse = element.attributeValue("reverse");
+		if (eleReverse !=null && eleReverse.equals("true")) {
 			Collections.reverse(chapterList);
 		}
 //		if (web.equals("BXWX")) {

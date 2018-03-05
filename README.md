@@ -1,2 +1,2 @@
 Novel Spider
-only for personal.
+only for personal use.

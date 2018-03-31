@@ -1,5 +1,6 @@
 package novel.storage.Impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +31,11 @@ public class NovelStorageImpl implements Processor {
 		// String result =
 		// IOUtils.toString(classLoader.getResourceAsStream("rule.xml"),
 		// "utf8");
-		sqlSessionFactory = new SqlSessionFactoryBuilder().build(classLoader.getResourceAsStream("SqlMapConfig.xml"));
+		InputStream is = classLoader.getResourceAsStream("resources/SqlMapConfig.xml");
+		if(null == is){
+			is = classLoader.getResourceAsStream("SqlMapConfig.xml");
+		}
+		sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
 		// sqlSessionFactory = new SqlSessionFactoryBuilder().build(new
 		// FileInputStream("conf/SqlMapConfig.xml"));
 

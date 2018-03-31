@@ -5,13 +5,13 @@
 
     <!--控制抓取网站有效性，只针对后台抓取-->
     <Valid>
-        <!--http://www.x23us.com,-->
+        https://www.x23us.com,
         http://www.hunhun520.com,
         http://www.kanshuzhong.com
     </Valid>
 
     <Site>
-        <domain>http://www.x23us.com</domain>
+        <domain>https://www.x23us.com</domain>
         <source>顶点小说</source>
         <charset>gbk</charset>
         <chapter-list-element selector="#at td a" reverse="false"/>
@@ -34,16 +34,16 @@
         <update-time-format>yy-MM-dd</update-time-format>
         <!--<novel-td-selector>td</novel-td-selector>-->
         <novel-book-list>
-            玄幻魔法,http://www.x23us.com/class/1_1.html;
-            武侠修真,http://www.x23us.com/class/2_1.html;
-            都市言情,http://www.x23us.com/class/3_1.html;
-            历史军事,http://www.x23us.com/class/4_1.html;
-            侦探推理,http://www.x23us.com/class/5_1.html;
-            网游动漫,http://www.x23us.com/class/6_1.html;
-            科幻小说,http://www.x23us.com/class/7_1.html;
-            恐怖灵异,http://www.x23us.com/class/8_1.html;
-            散文诗词,http://www.x23us.com/class/9_1.html;
-            其他类型,http://www.x23us.com/class/10_1.html;
+            玄幻魔法,https://www.x23us.com/class/1_1.html;
+            武侠修真,https://www.x23us.com/class/2_1.html;
+            都市言情,https://www.x23us.com/class/3_1.html;
+            历史军事,https://www.x23us.com/class/4_1.html;
+            侦探推理,https://www.x23us.com/class/5_1.html;
+            网游动漫,https://www.x23us.com/class/6_1.html;
+            科幻小说,https://www.x23us.com/class/7_1.html;
+            恐怖灵异,https://www.x23us.com/class/8_1.html;
+            散文诗词,https://www.x23us.com/class/9_1.html;
+            其他类型,https://www.x23us.com/class/10_1.html;
         </novel-book-list>
         <!--<download-url-replace>+ txt.html</download-url-replace>-->
         <!--<download-url-element selector="#TxtdownTop a" index="1"/>-->
